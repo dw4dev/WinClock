@@ -1,0 +1,183 @@
+﻿<Window
+    x:Class="WinClock.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:WinClock"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Title="桌面時鐘"
+    Width="300"
+    MinWidth="300"
+    MaxWidth="800"
+    AllowsTransparency="True"
+    Background="Transparent"
+    MouseLeftButtonDown="Window_MouseLeftButtonDown"
+    ResizeMode="CanResize"
+    SizeChanged="Window_SizeChanged"
+    SizeToContent="Height"
+    Topmost="True"
+    WindowStyle="None"
+    mc:Ignorable="d">
+
+    <Window.Resources>
+        <!--  Thumb 自定義樣式  -->
+        <Style x:Key="ResizeGripStyle" TargetType="Thumb">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Thumb">
+                        <Canvas
+                            Width="16"
+                            Height="16"
+                            Background="Transparent">
+                            <!--  右下角三角形排列  -->
+                            <Ellipse
+                                Canvas.Left="12"
+                                Canvas.Top="12"
+                                Width="2"
+                                Height="2"
+                                Fill="Gray" />
+
+                            <Ellipse
+                                Canvas.Left="8"
+                                Canvas.Top="12"
+                                Width="2"
+                                Height="2"
+                                Fill="Gray" />
+                            <Ellipse
+                                Canvas.Left="12"
+                                Canvas.Top="8"
+                                Width="2"
+                                Height="2"
+                                Fill="Gray" />
+
+                            <Ellipse
+                                Canvas.Left="4"
+                                Canvas.Top="12"
+                                Width="2"
+                                Height="2"
+                                Fill="Gray" />
+                            <Ellipse
+                                Canvas.Left="8"
+                                Canvas.Top="8"
+                                Width="2"
+                                Height="2"
+                                Fill="Gray" />
+                            <Ellipse
+                                Canvas.Left="12"
+                                Canvas.Top="4"
+                                Width="2"
+                                Height="2"
+                                Fill="Gray" />
+                        </Canvas>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Cursor" Value="SizeWE" />
+        </Style>
+    </Window.Resources>
+
+    <Border
+        Background="#F1F0E8"
+        BorderBrush="DarkGray"
+        BorderThickness="1.5"
+        ClipToBounds="True"
+        CornerRadius="4">
+        <Grid>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" MinHeight="24" />
+                    <RowDefinition Height="Auto" MinHeight="20" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <!--  工具列區域  -->
+                <DockPanel
+                    Grid.Row="0"
+                    Background="#DED0B6"
+                    LastChildFill="False">
+                    <DockPanel.Resources>
+                        <Style x:Key="Btn-Base" TargetType="Button">
+                            <Setter Property="Background" Value="Transparent" />
+                            <Setter Property="Width" Value="24" />
+                            <Setter Property="Height" Value="24" />
+                            <Setter Property="BorderThickness" Value="0" />
+                        </Style>
+                        <Style
+                            x:Key="Middle-Button"
+                            BasedOn="{StaticResource Btn-Base}"
+                            TargetType="Button">
+                            <Setter Property="Margin" Value="2,0" />
+                        </Style>
+                    </DockPanel.Resources>
+
+                    <Button
+                        x:Name="btnPinTop"
+                        Background="DarkSeaGreen"
+                        Click="btnPinTop_Click"
+                        DockPanel.Dock="Left"
+                        Style="{StaticResource Btn-Base}"
+                        ToolTip="將視窗固定在最上層">
+                        <Image Source="pack://application:,,,/WinClock;component/Images/pin.png" />
+                    </Button>
+
+                    <Button
+                        x:Name="btnClose"
+                        Click="btnClose_Click"
+                        DockPanel.Dock="Right"
+                        Style="{StaticResource Btn-Base}"
+                        ToolTip="關閉視窗">
+                        <Image Source="pack://application:,,,/WinClock;component/Images/close.png" />
+                    </Button>
+
+                    <Button
+                        x:Name="btnMinimize"
+                        Click="btnMinimize_Click"
+                        DockPanel.Dock="Right"
+                        Style="{StaticResource Middle-Button}"
+                        ToolTip="最小化視窗">
+                        <Image Source="pack://application:,,,/WinClock;component/Images/minimize.png" />
+                    </Button>
+                </DockPanel>
+
+                <Grid Grid.Row="2" Margin="0,-10,0,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <TextBlock
+                        x:Name="DateText"
+                        Grid.Row="0"
+                        HorizontalAlignment="Center"
+                        d:Text="2024/02/10"
+                        FontFamily="Segoe UI"
+                        FontSize="30"
+                        FontWeight="Bold"
+                        Foreground="#1F6E8C" />
+
+                    <TextBlock
+                        x:Name="TimeText"
+                        Grid.Row="1"
+                        Margin="0,-20,0,0"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Top"
+                        d:Text="02:10:06"
+                        FontFamily="Segoe UI"
+                        FontSize="68"
+                        FontWeight="Bold"
+                        Foreground="#607274" />
+                </Grid>
+            </Grid>
+            <!--  调整大小的把手  -->
+            <Thumb
+                x:Name="ResizeThumb"
+                Grid.Row="1"
+                Width="16"
+                Height="16"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Bottom"
+                DragDelta="ResizeThumb_DragDelta"
+                Style="{StaticResource ResizeGripStyle}" />
+        </Grid>
+    </Border>
+</Window>
