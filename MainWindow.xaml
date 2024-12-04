@@ -91,56 +91,129 @@
                 </Grid.RowDefinitions>
 
                 <!--  工具列區域  -->
-                <DockPanel
+                <Border
                     Grid.Row="0"
                     Background="#DED0B6"
-                    LastChildFill="False">
-                    <DockPanel.Resources>
-                        <Style x:Key="Btn-Base" TargetType="Button">
-                            <Setter Property="Background" Value="Transparent" />
-                            <Setter Property="Width" Value="24" />
-                            <Setter Property="Height" Value="24" />
-                            <Setter Property="BorderThickness" Value="0" />
-                        </Style>
-                        <Style
-                            x:Key="Middle-Button"
-                            BasedOn="{StaticResource Btn-Base}"
-                            TargetType="Button">
-                            <Setter Property="Margin" Value="2,0" />
-                        </Style>
-                    </DockPanel.Resources>
+                    CornerRadius="3 3 0 0">
+                    <DockPanel LastChildFill="False">
+                        <DockPanel.Resources>
+                            <Style x:Key="Btn-Base" TargetType="Button">
+                                <Setter Property="Background" Value="Transparent" />
+                                <Setter Property="Width" Value="24" />
+                                <Setter Property="Height" Value="24" />
+                                <Setter Property="BorderThickness" Value="0" />
+                                <Setter Property="Cursor" Value="Hand" />
+                            </Style>
+                            <Style
+                                x:Key="Middle-Button"
+                                BasedOn="{StaticResource Btn-Base}"
+                                TargetType="Button">
+                                <Setter Property="Margin" Value="2,0" />
+                            </Style>
 
-                    <Button
-                        x:Name="btnPinTop"
-                        Background="DarkSeaGreen"
-                        Click="btnPinTop_Click"
-                        DockPanel.Dock="Left"
-                        Style="{StaticResource Btn-Base}"
-                        ToolTip="將視窗固定在最上層">
-                        <Image Source="pack://application:,,,/WinClock;component/Images/pin.png" />
-                    </Button>
+                            <ControlTemplate x:Key="TPL-ButtonR" TargetType="Button">
+                                <Border
+                                    x:Name="border"
+                                    Background="{TemplateBinding Background}"
+                                    CornerRadius="0 4 0 0">
+                                    <ContentPresenter
+                                        x:Name="contentPresenter"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center" />
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <!--  滑鼠懸停效果  -->
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="border" Property="Background" Value="#AB886D" />
+                                    </Trigger>
+                                    <!--  按下效果  -->
+                                    <Trigger Property="IsPressed" Value="True">
+                                        <Setter TargetName="border" Property="Background" Value="#D6C0B3" />
+                                    </Trigger>
+                                    <!--  禁用效果  -->
+                                    <Trigger Property="IsEnabled" Value="False">
+                                        <Setter TargetName="border" Property="Background" Value="#F5F5F5" />
+                                        <Setter Property="Foreground" Value="#A0A0A0" />
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                            <ControlTemplate x:Key="TPL-ButtonL" TargetType="Button">
+                                <Border
+                                    x:Name="border"
+                                    Background="{TemplateBinding Background}"
+                                    CornerRadius="4 0 0 0">
+                                    <ContentPresenter
+                                        x:Name="contentPresenter"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center" />
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <!--  滑鼠懸停效果  -->
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="border" Property="Background" Value="#AB886D" />
+                                    </Trigger>
+                                    <!--  按下效果  -->
+                                    <Trigger Property="IsPressed" Value="True">
+                                        <Setter TargetName="border" Property="Background" Value="#D6C0B3" />
+                                    </Trigger>
+                                    <!--  禁用效果  -->
+                                    <Trigger Property="IsEnabled" Value="False">
+                                        <Setter TargetName="border" Property="Background" Value="#F5F5F5" />
+                                        <Setter Property="Foreground" Value="#A0A0A0" />
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
 
-                    <Button
-                        x:Name="btnClose"
-                        Click="btnClose_Click"
-                        DockPanel.Dock="Right"
-                        Style="{StaticResource Btn-Base}"
-                        ToolTip="關閉視窗">
-                        <Image Source="pack://application:,,,/WinClock;component/Images/close.png" />
-                    </Button>
+                            <Style
+                                x:Key="Right-Button"
+                                BasedOn="{StaticResource Btn-Base}"
+                                TargetType="Button">
+                                <Setter Property="Template" Value="{StaticResource TPL-ButtonR}" />
+                            </Style>
 
-                    <Button
-                        x:Name="btnMinimize"
-                        Click="btnMinimize_Click"
-                        DockPanel.Dock="Right"
-                        Style="{StaticResource Middle-Button}"
-                        ToolTip="最小化視窗">
-                        <Image Source="pack://application:,,,/WinClock;component/Images/minimize.png" />
-                    </Button>
-                </DockPanel>
+                            <Style
+                                x:Key="Left-Button"
+                                BasedOn="{StaticResource Btn-Base}"
+                                TargetType="Button">
+                                <Setter Property="Template" Value="{StaticResource TPL-ButtonL}" />
+                            </Style>
+                        </DockPanel.Resources>
+
+                        <Button
+                            x:Name="btnPinTop"
+                            Padding="2"
+                            Background="DarkSeaGreen"
+                            Click="btnPinTop_Click"
+                            DockPanel.Dock="Left"
+                            Style="{StaticResource Left-Button}"
+                            ToolTip="將視窗固定在最上層">
+                            <Image Source="pack://application:,,,/WinClock;component/Images/pin.png" />
+                        </Button>
+
+                        <Button
+                            x:Name="btnClose"
+                            Click="btnClose_Click"
+                            DockPanel.Dock="Right"
+                            Style="{StaticResource Right-Button}"
+                            ToolTip="關閉視窗">
+                            <Image Source="pack://application:,,,/WinClock;component/Images/close.png" />
+                        </Button>
+
+                        <Button
+                            x:Name="btnMinimize"
+                            Click="btnMinimize_Click"
+                            DockPanel.Dock="Right"
+                            Style="{StaticResource Middle-Button}"
+                            ToolTip="最小化視窗">
+                            <Image Source="pack://application:,,,/WinClock;component/Images/minimize.png" />
+
+                        </Button>
+                    </DockPanel>
+                </Border>
 
                 <Grid Grid.Row="2" Margin="0,-10,0,0">
                     <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
@@ -148,17 +221,32 @@
                     <TextBlock
                         x:Name="DateText"
                         Grid.Row="0"
-                        HorizontalAlignment="Center"
-                        d:Text="2024/02/10"
+                        Margin="10,-10,0,0"
+                        HorizontalAlignment="Left"
+                        d:Text="2024-02-10 (九)"
                         FontFamily="Segoe UI"
                         FontSize="30"
                         FontWeight="Bold"
                         Foreground="#1F6E8C" />
 
+                    <StackPanel
+                        Grid.Row="1"
+                        Margin="10,-5,0,0"
+                        Orientation="Horizontal">
+                        <TextBlock
+                            x:Name="LunarDateText"
+                            HorizontalAlignment="Left"
+                            d:Text="農曆 臘月初六"
+                            FontFamily="新細明體"
+                            FontSize="22"
+                            FontWeight="Bold"
+                            Foreground="#705C53" />
+                    </StackPanel>
+
                     <TextBlock
                         x:Name="TimeText"
-                        Grid.Row="1"
-                        Margin="0,-20,0,0"
+                        Grid.Row="2"
+                        Margin="0,-10,0,0"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Top"
                         d:Text="02:10:06"

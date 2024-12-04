@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Globalization;
+using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
 
@@ -10,7 +11,7 @@ namespace WinClock
     public partial class MainWindow : Window
     {
         private readonly DispatcherTimer timer;
-        private string lastDate;
+        private string nowDate = "", lunarDate = "";
         private const double BASE_WIDTH = 320;
         private const double TIME_FONT_SIZE = 68;
         private const double DATE_FONT_SIZE = 30;
@@ -26,7 +27,6 @@ namespace WinClock
 
             StateChanged += MainWindow_StateChanged;
 
-            lastDate = DateTime.Now.ToString("yyyy/MM/dd");
             timer.Start();
             UpdateTimeDisplay();
         }
@@ -54,16 +54,22 @@ namespace WinClock
             }
         }
 
+        static string[] weekdays = { "日", "一", "二", "三", "四", "五", "六" };
         private void UpdateTimeDisplay()
         {
             var now = DateTime.Now;
-            var currentDate = now.ToString("yyyy/MM/dd");
+            var dow = (int)now.DayOfWeek;
+            var currentDate = now.ToString($"yyyy/MM/dd");
 
-            if (currentDate != lastDate) {
-                lastDate = currentDate;
+            currentDate = $"{currentDate} ({weekdays[dow]})";
+
+            lunarDate = GetChineseDate(now);
+            if (currentDate != nowDate) {
+                nowDate = currentDate;
+                DateText.Text = currentDate;
+                LunarDateText.Text = lunarDate;
             }
 
-            DateText.Text = currentDate;
             TimeText.Text = now.ToString("HH:mm:ss");
         }
 
@@ -106,5 +112,45 @@ namespace WinClock
             double newWidth = Math.Max(MinWidth, Width + e.HorizontalChange);
             Width = newWidth;
         }
+
+        #region 處理農曆
+
+        static readonly string[] ChineseMonths = {
+            "正月", "二月", "三月", "四月", "五月", "六月",
+            "七月", "八月", "九月", "十月", "冬月", "臘月"
+        };
+        /// <summary>
+        /// 取得農曆日期
+        /// </summary>
+        string GetChineseDate(DateTime wdt)
+        {
+            ChineseLunisolarCalendar lunar = new ChineseLunisolarCalendar();
+            DateTime now = wdt;
+
+            //int year = lunar.GetYear(now);
+            int month = lunar.GetMonth(now);
+            int day = lunar.GetDayOfMonth(now);
+
+            var dayText = GetChineseDayName(day);
+
+            //return $"農曆 {year}年{month}月{day}日";
+            return $"農曆 {ChineseMonths[month]}{dayText}";
+        }
+
+        static string GetChineseDayName(int day)
+        {
+            string[] numbers = { "零", "一", "二", "三", "四", "五", "六", "七", "八", "九", "十" };
+            if (day < 11)
+                return "初" + numbers[day];
+            if (day < 20)
+                return "十" + numbers[day % 10];
+            if (day == 20)
+                return "二十";
+            if (day < 30)
+                return "廿" + numbers[day % 10];
+            return day == 30 ? "三十" : "三十" + numbers[day % 10];
+        }
+
+        #endregion
     }
 }
