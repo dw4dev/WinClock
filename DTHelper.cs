@@ -2,6 +2,10 @@
 {
     public static class DTHelper
     {
+        /// <summary>
+        /// 節氣時間表
+        /// 資料來源：https://calendar.8s8s.net/lunarcalendar.2.php
+        /// </summary>
         internal static readonly Dictionary<int, List<SolarTerm>> SolarTerms = new Dictionary<int, List<SolarTerm>>
         {
             {
