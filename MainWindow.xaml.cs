@@ -1,6 +1,7 @@
 ﻿using System.Globalization;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Threading;
 
 namespace WinClock
@@ -15,6 +16,21 @@ namespace WinClock
         private const double BASE_WIDTH = 320;
         private const double TIME_FONT_SIZE = 68;
         private const double DATE_FONT_SIZE = 30;
+
+        static Brush bc一般 = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFF7D1"));
+        static Brush fc一般 = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#40534C"));
+
+        static Brush bc立春 = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FEFDED"));
+        static Brush fc立春 = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FA7070"));
+
+        static Brush bc立夏 = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFB996"));
+        static Brush fc立夏 = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF0000"));
+
+        static Brush bc立秋 = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#705C53"));
+        static Brush fc立秋 = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#B17457"));
+
+        static Brush bc立冬 = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#0A5EB0"));
+        static Brush fc立冬 = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#F2F9FF"));
 
         public MainWindow()
         {
@@ -64,12 +80,45 @@ namespace WinClock
             currentDate = $"{currentDate} ({weekdays[dow]})";
 
             lunarDate = GetChineseDate(now);
+            var solarTerm = GetSolarTerm(now);
+
             if (currentDate != nowDate) {
                 nowDate = currentDate;
-                DateText.Text = currentDate;
-                LunarDateText.Text = lunarDate;
             }
 
+            var hasSolarTerm = !string.IsNullOrEmpty(solarTerm);
+            LunarTerm.Visibility = hasSolarTerm ? Visibility.Visible : Visibility.Collapsed;
+
+            if (hasSolarTerm) {
+                LunarTermText.Text = solarTerm;
+                if (solarTerm.StartsWith("立")) {
+                    switch (solarTerm) {
+                        case "立春":
+                            LunarTerm.Background = bc立春;
+                            LunarTermText.Foreground = fc立春;
+                            break;
+                        case "立夏":
+                            LunarTerm.Background = bc立夏;
+                            LunarTermText.Foreground = fc立夏;
+                            break;
+                        case "立秋":
+                            LunarTerm.Background = bc立秋;
+                            LunarTermText.Foreground = fc立秋;
+                            break;
+                        case "立冬":
+                            LunarTerm.Background = bc立冬;
+                            LunarTermText.Foreground = fc立冬;
+                            break;
+                    }
+                }
+                else {
+                    LunarTerm.Background = bc一般;
+                    LunarTermText.Foreground = fc一般;
+                }
+            }
+
+            DateText.Text = currentDate;
+            LunarDateText.Text = lunarDate;
             TimeText.Text = now.ToString("HH:mm:ss");
         }
 
@@ -127,13 +176,12 @@ namespace WinClock
             ChineseLunisolarCalendar lunar = new ChineseLunisolarCalendar();
             DateTime now = wdt;
 
-            //int year = lunar.GetYear(now);
+            int year = lunar.GetYear(now);
             int month = lunar.GetMonth(now);
             int day = lunar.GetDayOfMonth(now);
 
             var dayText = GetChineseDayName(day);
 
-            //return $"農曆 {year}年{month}月{day}日";
             return $"農曆 {ChineseMonths[month]}{dayText}";
         }
 
@@ -151,6 +199,25 @@ namespace WinClock
             return day == 30 ? "三十" : "三十" + numbers[day % 10];
         }
 
+        /// <summary>
+        /// 取得指定日期時間的節氣
+        /// </summary>
+        string GetSolarTerm(DateTime dateTime)
+        {
+            if (DTHelper.SolarTerms.TryGetValue(dateTime.Year, out var yearTerms)) {
+                var term = yearTerms.FirstOrDefault(t =>
+                    t.Month == dateTime.Month &&
+                    t.Day == dateTime.Day);
+
+                if (term != null) {
+                    var termTime = new DateTime(dateTime.Year, term.Month, term.Day, term.Hour, term.Minute, 0);
+                    if (dateTime >= termTime) {
+                        return $"{term.Name} ({term.Hour:D2}:{term.Minute:D2})";
+                    }
+                }
+            }
+            return string.Empty;
+        }
         #endregion
     }
 }

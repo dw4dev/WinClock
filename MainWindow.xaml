@@ -231,7 +231,7 @@
 
                     <StackPanel
                         Grid.Row="1"
-                        Margin="10,-5,0,0"
+                        Margin="10,0,0,0"
                         Orientation="Horizontal">
                         <TextBlock
                             x:Name="LunarDateText"
@@ -241,6 +241,23 @@
                             FontSize="22"
                             FontWeight="Bold"
                             Foreground="#705C53" />
+
+                        <Border
+                            x:Name="LunarTerm"
+                            Margin="10,0,0,0"
+                            Background="#0A5EB0"
+                            BorderThickness="1"
+                            CornerRadius="5">
+                            <TextBlock
+                                x:Name="LunarTermText"
+                                Margin="4,0"
+                                HorizontalAlignment="Left"
+                                d:Text="立春"
+                                FontFamily="新細明體"
+                                FontSize="22"
+                                FontWeight="Bold"
+                                Foreground="#F2F9FF" />
+                        </Border>
                     </StackPanel>
 
                     <TextBlock
