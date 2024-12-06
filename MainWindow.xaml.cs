@@ -13,7 +13,7 @@ namespace WinClock
     {
         private readonly DispatcherTimer timer;
         private string nowDate = "", lunarDate = "";
-        private const double BASE_WIDTH = 320;
+        private const double BASE_WIDTH = 310;
         private const double TIME_FONT_SIZE = 68;
         private const double DATE_FONT_SIZE = 30;
 
@@ -210,9 +210,10 @@ namespace WinClock
                     t.Day == dateTime.Day);
 
                 if (term != null) {
-                    var termTime = new DateTime(dateTime.Year, term.Month, term.Day, term.Hour, term.Minute, 0);
+                    //var termTime = new DateTime(dateTime.Year, term.Month, term.Day, term.Hour, term.Minute, 0);
+                    var termTime = new DateTime(dateTime.Year, term.Month, term.Day, 0, 0, 0);
                     if (dateTime >= termTime) {
-                        return $"{term.Name} ({term.Hour:D2}:{term.Minute:D2})";
+                        return $"{term.Name} @{term.Hour:D2}:{term.Minute:D2}";
                     }
                 }
             }
