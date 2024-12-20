@@ -189,6 +189,40 @@
                             ToolTip="將視窗固定在最上層">
                             <Image Source="pack://application:,,,/WinClock;component/Images/pin.png" />
                         </Button>
+                        <Border
+                            Width="1"
+                            Margin="3,2"
+                            BorderBrush="DarkGray"
+                            BorderThickness="1,0,0,0" />
+
+                        <!--  鬧鐘按鈕區域  -->
+                        <Button
+                            x:Name="btnAlarm1"
+                            Padding="2"
+                            Click="btnAlarm_Click"
+                            DockPanel.Dock="Left"
+                            Style="{StaticResource Middle-Button}"
+                            Tag="1"
+                            ToolTip="設定鬧鐘1">
+                            <Image Source="pack://application:,,,/WinClock;component/Images/alarm.png" />
+                        </Button>
+
+                        <Button
+                            x:Name="btnAlarm2"
+                            Padding="2"
+                            Click="btnAlarm_Click"
+                            DockPanel.Dock="Left"
+                            Style="{StaticResource Middle-Button}"
+                            Tag="2"
+                            ToolTip="設定鬧鐘2">
+                            <Image Source="pack://application:,,,/WinClock;component/Images/alarm.png" />
+                        </Button>
+
+                        <Border
+                            Width="1"
+                            Margin="3,2"
+                            BorderBrush="DarkGray"
+                            BorderThickness="1,0,0,0" />
 
                         <Button
                             x:Name="btnClose"

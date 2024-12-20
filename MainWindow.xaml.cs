@@ -1,8 +1,14 @@
-﻿using System.Globalization;
+﻿using System.Diagnostics;
+using System.Globalization;
+using System.IO;
+using System.Reflection;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
+
+using NAudio.Wave;
 
 namespace WinClock
 {
@@ -16,6 +22,9 @@ namespace WinClock
         private const double BASE_WIDTH = 310;
         private const double TIME_FONT_SIZE = 68;
         private const double DATE_FONT_SIZE = 30;
+
+        Dictionary<string, AlarmCfg> alarmCfgs = new();
+        Dictionary<string, DispatcherTimer> alarms = new();
 
         static Brush bc一般 = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFF7D1"));
         static Brush fc一般 = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#40534C"));
@@ -148,6 +157,106 @@ namespace WinClock
             else {
                 this.Topmost = true;
                 btnPinTop.Background = System.Windows.Media.Brushes.DarkSeaGreen;
+            }
+        }
+
+        private void btnAlarm_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is not Button btn || btn.Tag == null) return;
+            var key = btn.Tag.ToString() ?? "";
+            if (!alarmCfgs.TryGetValue(key, out var alarmCfg))
+                alarmCfg = new();
+
+            if (!alarmCfg.IsEnabled)
+                alarmCfg.AddMinutes(5);
+
+            var alarmSetupWindow = new AlarmSetupWindow {
+                MyAlarmCfg = alarmCfg
+            };
+            alarmSetupWindow.Topmost = this.Topmost;
+            alarmSetupWindow.ShowDialog();
+            if (alarmSetupWindow.DialogResult == true) {
+                //清除鬧鐘
+                if (alarmSetupWindow.MyAlarmCfg == null) {
+                    CleanAlarm(key);
+                    btn.Background = Brushes.Transparent;
+                    return;
+                }
+
+                //設定鬧鐘
+                alarmCfgs[key] = alarmSetupWindow.MyAlarmCfg;
+                var cfg = alarmCfgs[key];
+                if (cfg.IsEnabled) {
+                    //鬧鐘時間異動，重新來
+                    if (alarms.TryGetValue(key, out var timer)) {
+                        timer.Stop();
+                        timer.Interval = cfg.GetTimeSpan();
+                        timer.Start();
+                        return;
+                    }
+                }
+
+                alarms[key] = new() { Interval = cfg.GetTimeSpan() };
+                alarms[key].Tick += (s, e) => {
+                    if (cfg.IsPlaySound) {
+                        try {
+                            var fld = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                            var mp3 = Path.Combine(fld!, SG.AlarmSounds[cfg.SoundName!]);
+                            var mp3FileReader = new Mp3FileReader(mp3);
+                            var waveOutEvent = new WaveOutEvent();
+                            waveOutEvent.Init(mp3FileReader);
+                            waveOutEvent.Play();
+                            waveOutEvent.PlaybackStopped += (s, e) => {
+                                waveOutEvent.Stop();
+                                waveOutEvent.Dispose();
+                                mp3FileReader.Dispose();
+                            };
+                        }
+                        catch (Exception ex) {
+                            //有可能檔案不存在，就不播放
+                            Debug.WriteLine(ex.Message);
+                        }
+                    }
+
+                    MsgWindow msgWindow;
+                    if (cfg.IsShowMsg) {
+                        msgWindow = new MsgWindow {
+                            EnableFadeIn = true,
+                            HeaderText = $"鬧鐘{key}",
+                            MessageText = cfg?.MsgText ?? $"鬧鐘{key}時間到"
+                        };
+                    }
+                    else {
+                        msgWindow = new MsgWindow {
+                            EnableFadeIn = true,
+                            HeaderText = $"鬧鐘{key}",
+                            MessageText = $"鬧鐘{key}時間到"
+                        };
+                    }
+
+                    alarms[key].Stop();
+                    alarmCfgs[key].IsEnabled = false;
+                    CleanAlarm(key);
+                    btn.Background = Brushes.Transparent;
+
+                    msgWindow.ShowDialog();
+                };
+
+                alarms[key].Start();
+                cfg.IsEnabled = true;
+                btn.Background = Brushes.LightCoral;
+            }
+        }
+
+        /// <summary>
+        /// 表示清除指定鬧鐘
+        /// </summary>
+        void CleanAlarm(string key)
+        {
+            alarmCfgs.Remove(key);
+            if (alarms.TryGetValue(key, out var timer)) {
+                timer.Stop();
+                alarms.Remove(key);
             }
         }
 

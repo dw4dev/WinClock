@@ -1,0 +1,80 @@
+﻿<Window
+    x:Class="WinClock.MsgWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:WinClock"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Title="訊息視窗"
+    Width="500"
+    Height="300"
+    AllowsTransparency="True"
+    Background="Transparent"
+    DataContext="{Binding RelativeSource={RelativeSource Mode=Self}}"
+    Loaded="Window_Loaded"
+    ResizeMode="NoResize"
+    SizeToContent="Height"
+    Topmost="True"
+    WindowStartupLocation="CenterScreen"
+    WindowStyle="None"
+    mc:Ignorable="d">
+    <Border
+        Background="#FFF8E6"
+        BorderBrush="DarkGray"
+        BorderThickness="1"
+        CornerRadius="8">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="40" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="10" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <Border
+                Grid.Row="0"
+                Background="#D6CFB4"
+                CornerRadius="8 8 0 0">
+                <TextBlock
+                    x:Name="txtTitle"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    FontSize="20"
+                    FontWeight="Bold"
+                    Foreground="#474E93"
+                    Text="{Binding HeaderText, TargetNullValue=訊息視窗, FallbackValue=訊息視窗}" />
+            </Border>
+
+            <ScrollViewer
+                Grid.Row="1"
+                Margin="0,10,0,0"
+                VerticalScrollBarVisibility="Auto">
+                <Border MinHeight="60">
+                    <TextBlock
+                        x:Name="txtMessage"
+                        Margin="10"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        FontFamily="微軟正黑體"
+                        FontSize="20"
+                        Foreground="#8D0B41"
+                        Text="{Binding MessageText, TargetNullValue=無訊息內容, FallbackValue=無訊息內容}"
+                        TextWrapping="Wrap" />
+                </Border>
+            </ScrollViewer>
+
+            <Button
+                x:Name="btnClose"
+                Grid.Row="3"
+                Width="120"
+                Height="30"
+                Margin="0,0,0,10"
+                Background="#D6CFB4"
+                BorderThickness="0"
+                Click="btnClose_Click"
+                Content="關 閉"
+                FontSize="18" />
+
+        </Grid>
+    </Border>
+</Window>
