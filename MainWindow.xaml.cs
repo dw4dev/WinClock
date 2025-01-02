@@ -282,7 +282,6 @@ namespace WinClock
         static readonly string[] ChineseMonths = { "??",
             "正月", "二月", "三月", "四月", "五月", "六月",
             "七月", "八月", "九月", "十月", "冬月", "臘月",
-            "??",
         };
 
         /// <summary>
@@ -297,9 +296,16 @@ namespace WinClock
             int month = lunar.GetMonth(now);
             int day = lunar.GetDayOfMonth(now);
 
+            // 判斷是否為閏月
+            bool isLeapMonth = lunar.IsLeapMonth(year, month > 12 ? month - 12 : month);
+            // 真正的月份 (去掉閏月偏移)
+            int displayMonth = month > 12 ? month - 12 : month;
+            // 如果是閏月，前面加上「閏」
+            string monthText = (isLeapMonth ? "閏" : "") + ChineseMonths[displayMonth];
+
             var dayText = GetChineseDayName(day);
 
-            return $"農曆 {ChineseMonths[month]}{dayText}";
+            return $"農曆 {monthText}{dayText}";
         }
 
         static string GetChineseDayName(int day)
