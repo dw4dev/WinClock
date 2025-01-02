@@ -82,53 +82,58 @@ namespace WinClock
         static string[] weekdays = { "日", "一", "二", "三", "四", "五", "六" };
         private void UpdateTimeDisplay()
         {
-            var now = DateTime.Now;
-            var dow = (int)now.DayOfWeek;
-            var currentDate = now.ToString($"yyyy/MM/dd");
+            try {
+                var now = DateTime.Now;
+                var dow = (int)now.DayOfWeek;
+                var currentDate = now.ToString($"yyyy/MM/dd");
 
-            currentDate = $"{currentDate} ({weekdays[dow]})";
+                currentDate = $"{currentDate} ({weekdays[dow]})";
 
-            lunarDate = GetChineseDate(now);
-            var solarTerm = GetSolarTerm(now);
+                lunarDate = GetChineseDate(now);
+                var solarTerm = GetSolarTerm(now);
 
-            if (currentDate != nowDate) {
-                nowDate = currentDate;
-            }
+                if (currentDate != nowDate) {
+                    nowDate = currentDate;
+                }
 
-            var hasSolarTerm = !string.IsNullOrEmpty(solarTerm);
-            LunarTerm.Visibility = hasSolarTerm ? Visibility.Visible : Visibility.Collapsed;
+                var hasSolarTerm = !string.IsNullOrEmpty(solarTerm);
+                LunarTerm.Visibility = hasSolarTerm ? Visibility.Visible : Visibility.Collapsed;
 
-            if (hasSolarTerm) {
-                LunarTermText.Text = solarTerm;
-                if (solarTerm.StartsWith("立")) {
-                    switch (solarTerm) {
-                        case "立春":
-                            LunarTerm.Background = bc立春;
-                            LunarTermText.Foreground = fc立春;
-                            break;
-                        case "立夏":
-                            LunarTerm.Background = bc立夏;
-                            LunarTermText.Foreground = fc立夏;
-                            break;
-                        case "立秋":
-                            LunarTerm.Background = bc立秋;
-                            LunarTermText.Foreground = fc立秋;
-                            break;
-                        case "立冬":
-                            LunarTerm.Background = bc立冬;
-                            LunarTermText.Foreground = fc立冬;
-                            break;
+                if (hasSolarTerm) {
+                    LunarTermText.Text = solarTerm;
+                    if (solarTerm.StartsWith("立")) {
+                        switch (solarTerm) {
+                            case "立春":
+                                LunarTerm.Background = bc立春;
+                                LunarTermText.Foreground = fc立春;
+                                break;
+                            case "立夏":
+                                LunarTerm.Background = bc立夏;
+                                LunarTermText.Foreground = fc立夏;
+                                break;
+                            case "立秋":
+                                LunarTerm.Background = bc立秋;
+                                LunarTermText.Foreground = fc立秋;
+                                break;
+                            case "立冬":
+                                LunarTerm.Background = bc立冬;
+                                LunarTermText.Foreground = fc立冬;
+                                break;
+                        }
+                    }
+                    else {
+                        LunarTerm.Background = bc一般;
+                        LunarTermText.Foreground = fc一般;
                     }
                 }
-                else {
-                    LunarTerm.Background = bc一般;
-                    LunarTermText.Foreground = fc一般;
-                }
-            }
 
-            DateText.Text = currentDate;
-            LunarDateText.Text = lunarDate;
-            TimeText.Text = now.ToString("HH:mm:ss");
+                DateText.Text = currentDate;
+                LunarDateText.Text = lunarDate;
+                TimeText.Text = now.ToString("HH:mm:ss");
+            }
+            catch (Exception ex) {
+                Debug.WriteLine(ex.Message);
+            }
         }
 
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -273,10 +278,13 @@ namespace WinClock
 
         #region 處理農曆
 
-        static readonly string[] ChineseMonths = {
+        //農曆名稱
+        static readonly string[] ChineseMonths = { "??",
             "正月", "二月", "三月", "四月", "五月", "六月",
-            "七月", "八月", "九月", "十月", "冬月", "臘月"
+            "七月", "八月", "九月", "十月", "冬月", "臘月",
+            "??",
         };
+
         /// <summary>
         /// 取得農曆日期
         /// </summary>
