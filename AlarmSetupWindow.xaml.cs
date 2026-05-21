@@ -129,8 +129,8 @@ namespace WinClock
             if (cmbSound.SelectedItem is not string soundName) return;
 
             IsPlaying = true;
-            var fld = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            var mp3 = Path.Combine(fld!, SG.AlarmSounds[MyAlarmCfg!.SoundName!]);
+            var fld = AppContext.BaseDirectory;
+            var mp3 = Path.Combine(fld, SG.AlarmSounds[MyAlarmCfg!.SoundName!]);
             mp3FileReader = new Mp3FileReader(mp3);
             waveOutEvent = new WaveOutEvent();
 
