@@ -48,6 +48,9 @@ namespace WinClock
         {
             InitializeComponent();
 
+            // 顯示版本資訊 (由 Nerdbank.GitVersioning 自動產生)
+            VersionText.Text = $"v{ThisAssembly.AssemblyInformationalVersion}";
+
             ApplyTheme(true); // 預設使用深色磨砂主題
 
             timer = new DispatcherTimer {
