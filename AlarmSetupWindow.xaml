@@ -18,8 +18,8 @@
     mc:Ignorable="d">
 
     <Window.Resources>
-        <!-- 主題資源定義 (將在後台動態更新) -->
-        <SolidColorBrush x:Key="WindowBackground" Color="#E61E1E24" />
+        <!--  主題資源定義 (將在後台動態更新)  -->
+        <SolidColorBrush x:Key="WindowBackground" Color="#E6202940" />
         <SolidColorBrush x:Key="WindowBorder" Color="#33FFFFFF" />
         <SolidColorBrush x:Key="TextPrimary" Color="#FFFFFF" />
         <SolidColorBrush x:Key="TextSecondary" Color="#A0A5B5" />
@@ -30,7 +30,7 @@
         <SolidColorBrush x:Key="ButtonPressedBackground" Color="#40FFFFFF" />
         <SolidColorBrush x:Key="AccentBrush" Color="#81BFDA" />
 
-        <!-- 扁平按鈕樣式 -->
+        <!--  扁平按鈕樣式  -->
         <Style x:Key="ModernButtonStyle" TargetType="Button">
             <Setter Property="Background" Value="{DynamicResource ControlBackground}" />
             <Setter Property="Foreground" Value="{DynamicResource TextPrimary}" />
@@ -65,7 +65,7 @@
             </Setter>
         </Style>
 
-        <!-- 關閉按鈕樣式 -->
+        <!--  關閉按鈕樣式  -->
         <Style x:Key="IconButtonStyle" TargetType="Button">
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="BorderThickness" Value="0" />
@@ -75,7 +75,10 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border x:Name="border" Background="{TemplateBinding Background}" CornerRadius="4">
+                        <Border
+                            x:Name="border"
+                            Background="{TemplateBinding Background}"
+                            CornerRadius="4">
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
                         </Border>
                         <ControlTemplate.Triggers>
@@ -91,7 +94,7 @@
             </Setter>
         </Style>
 
-        <!-- ComboBox 簡約樣式微調 -->
+        <!--  ComboBox 簡約樣式微調  -->
         <Style TargetType="ComboBox">
             <Setter Property="Padding" Value="6,4" />
             <Setter Property="Background" Value="{DynamicResource ControlBackground}" />
@@ -102,7 +105,7 @@
             <Setter Property="VerticalContentAlignment" Value="Center" />
         </Style>
 
-        <!-- DatePicker 簡約樣式微調 -->
+        <!--  DatePicker 簡約樣式微調  -->
         <Style TargetType="DatePicker">
             <Setter Property="Padding" Value="4,2" />
             <Setter Property="BorderThickness" Value="1" />
@@ -110,7 +113,7 @@
             <Setter Property="Height" Value="28" />
         </Style>
 
-        <!-- TextBox 樣式 -->
+        <!--  TextBox 樣式  -->
         <Style TargetType="TextBox">
             <Setter Property="Padding" Value="6,4" />
             <Setter Property="Background" Value="{DynamicResource ControlBackground}" />
@@ -129,7 +132,11 @@
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}"
                             CornerRadius="4">
-                            <ScrollViewer x:Name="PART_ContentHost" Focusable="false" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" />
+                            <ScrollViewer
+                                x:Name="PART_ContentHost"
+                                Focusable="false"
+                                HorizontalScrollBarVisibility="Hidden"
+                                VerticalScrollBarVisibility="Hidden" />
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsKeyboardFocused" Value="true">
@@ -141,7 +148,7 @@
             </Setter>
         </Style>
 
-        <!-- CheckBox 樣式 -->
+        <!--  CheckBox 樣式  -->
         <Style TargetType="CheckBox">
             <Setter Property="Foreground" Value="{DynamicResource TextPrimary}" />
             <Setter Property="VerticalContentAlignment" Value="Center" />
@@ -153,66 +160,92 @@
         Background="{DynamicResource WindowBackground}"
         BorderBrush="{DynamicResource WindowBorder}"
         BorderThickness="1"
-        CornerRadius="16">
+        CornerRadius="16"
+        TextElement.FontSize="16">
         <Grid Margin="16">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="47*" />
+                <ColumnDefinition Width="249*" />
+            </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" /> <!-- 標頭 -->
+                <RowDefinition Height="Auto" />
+                <!--  標頭  -->
                 <RowDefinition Height="12" />
-                <RowDefinition Height="*" />    <!-- 內容 -->
+                <RowDefinition Height="*" />
+                <!--  內容  -->
                 <RowDefinition Height="20" />
-                <RowDefinition Height="Auto" /> <!-- 按鈕 -->
+                <RowDefinition Height="Auto" />
+                <!--  按鈕  -->
             </Grid.RowDefinitions>
 
-            <!-- 標頭 -->
-            <Grid Grid.Row="0">
+            <!--  標頭  -->
+            <Grid Grid.Row="0" Grid.ColumnSpan="2">
                 <TextBlock
                     HorizontalAlignment="Left"
                     VerticalAlignment="Center"
-                    FontSize="16"
+                    FontSize="18"
                     FontWeight="Bold"
                     Foreground="{DynamicResource TextPrimary}"
                     Text="設定鬧鐘" />
 
                 <Button
                     x:Name="btnHeaderClose"
-                    Click="btnCancel_Click"
                     HorizontalAlignment="Right"
+                    Click="btnCancel_Click"
                     Style="{StaticResource IconButtonStyle}">
-                    <Path Data="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" 
-                          Fill="{DynamicResource IconForeground}" 
-                          Width="9" Height="9" Stretch="Uniform" />
+                    <Path
+                        Width="9"
+                        Height="9"
+                        Data="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
+                        Fill="{DynamicResource IconForeground}"
+                        Stretch="Uniform" />
                 </Button>
             </Grid>
 
-            <!-- 內容區 -->
-            <StackPanel Grid.Row="2" Orientation="Vertical">
-                <!-- 日期選擇 -->
+            <!--  內容區  -->
+            <StackPanel
+                Grid.Row="2"
+                Grid.ColumnSpan="2"
+                Orientation="Vertical">
+                <!--  日期選擇  -->
                 <Grid Margin="0,0,0,12">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="60" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="0" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondary}" Text="日期：" />
+                    <TextBlock
+                        Grid.Column="0"
+                        VerticalAlignment="Center"
+                        Foreground="{DynamicResource TextSecondary}"
+                        Text="日期：" />
                     <DatePicker
                         x:Name="AlarmDatePicker"
                         Grid.Column="1"
                         SelectedDate="{Binding MyAlarmCfg.AlarmDate, Mode=TwoWay}" />
                 </Grid>
 
-                <!-- 時間選擇 -->
+                <!--  時間選擇  -->
                 <Grid Margin="0,0,0,12">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="60" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="0" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondary}" Text="時間：" />
+                    <TextBlock
+                        Grid.Column="0"
+                        VerticalAlignment="Center"
+                        Foreground="{DynamicResource TextSecondary}"
+                        Text="時間：" />
                     <StackPanel Grid.Column="1" Orientation="Horizontal">
                         <ComboBox
                             x:Name="cmbHour"
                             Width="70"
                             IsEditable="True"
                             SelectedValue="{Binding MyAlarmCfg.Hour, Mode=TwoWay}" />
-                        <TextBlock VerticalAlignment="Center" Margin="6,0" Foreground="{DynamicResource TextPrimary}" Text="：" />
+                        <TextBlock
+                            Margin="6,0"
+                            VerticalAlignment="Center"
+                            Foreground="{DynamicResource TextPrimary}"
+                            Text="：" />
                         <ComboBox
                             x:Name="cmbMinute"
                             Width="70"
@@ -221,7 +254,7 @@
                     </StackPanel>
                 </Grid>
 
-                <!-- 音效設定 -->
+                <!--  音效設定  -->
                 <Grid Margin="0,0,0,12">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="90" />
@@ -250,7 +283,7 @@
                         IsEnabled="{Binding MyAlarmCfg.IsPlaySound}"
                         ToolTip="播放試聽">
                         <Button.Style>
-                            <Style TargetType="Button" BasedOn="{StaticResource IconButtonStyle}">
+                            <Style BasedOn="{StaticResource IconButtonStyle}" TargetType="Button">
                                 <Setter Property="Visibility" Value="Visible" />
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=local:AlarmSetupWindow}, Path=IsPlaying}" Value="True">
@@ -259,12 +292,17 @@
                                 </Style.Triggers>
                             </Style>
                         </Button.Style>
-                        <!-- 播放向量圖示 -->
-                        <Path Data="M8 5v14l11-7z" Fill="{DynamicResource IconForeground}" Width="12" Height="12" Stretch="Uniform" />
+                        <!--  播放向量圖示  -->
+                        <Path
+                            Width="12"
+                            Height="12"
+                            Data="M8 5v14l11-7z"
+                            Fill="{DynamicResource IconForeground}"
+                            Stretch="Uniform" />
                     </Button>
                 </Grid>
 
-                <!-- 文字訊息設定 -->
+                <!--  文字訊息設定  -->
                 <StackPanel Orientation="Vertical">
                     <CheckBox
                         x:Name="chkShowMsg"
@@ -278,8 +316,13 @@
                 </StackPanel>
             </StackPanel>
 
-            <!-- 底部動作按鈕 -->
-            <Grid Grid.Row="4">
+            <!--  底部動作按鈕  -->
+            <Grid
+                Grid.Row="3"
+                Grid.RowSpan="2"
+                Grid.ColumnSpan="2"
+                MinHeight="30"
+                Margin="0,20,0,0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
@@ -288,20 +331,21 @@
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
-                <!-- 清除鬧鐘 -->
+                <!--  清除鬧鐘  -->
                 <Button
                     x:Name="btnRemove"
                     Grid.Column="0"
+                    Width="76"
                     Background="#33EF4444"
-                    Foreground="#FFFCA5A5"
                     BorderBrush="#66EF4444"
-                    Content="清除鬧鐘"
                     Click="btnRemove_Click"
+                    Content="清除鬧鐘"
+                    Foreground="#FFFCA5A5"
                     IsEnabled="{Binding MyAlarmCfg.IsEnabled}">
                     <Button.Style>
-                        <Style TargetType="Button" BasedOn="{StaticResource ModernButtonStyle}">
+                        <Style BasedOn="{StaticResource ModernButtonStyle}" TargetType="Button">
                             <Style.Triggers>
-                                <!-- 當為淺色主題時，清除按鈕的顏色優化 -->
+                                <!--  當為淺色主題時，清除按鈕的顏色優化  -->
                                 <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=local:AlarmSetupWindow}, Path=IsDarkTheme}" Value="False">
                                     <Setter Property="Background" Value="#FFE8E8" />
                                     <Setter Property="Foreground" Value="#DC2626" />
@@ -312,24 +356,26 @@
                     </Button.Style>
                 </Button>
 
-                <!-- 取消與確定 -->
+                <!--  取消與確定  -->
                 <Button
                     x:Name="btnCancel"
                     Grid.Column="2"
-                    Content="取消"
+                    Width="60"
                     Click="btnCancel_Click"
+                    Content="取消"
                     Style="{StaticResource ModernButtonStyle}" />
 
                 <Button
                     x:Name="btnOK"
                     Grid.Column="4"
+                    Width="60"
                     Background="{DynamicResource AccentBrush}"
-                    Foreground="#1E293B"
                     BorderThickness="0"
+                    Click="btnOK_Click"
                     Content="確定"
-                    Click="btnOK_Click">
+                    Foreground="#1E293B">
                     <Button.Style>
-                        <Style TargetType="Button" BasedOn="{StaticResource ModernButtonStyle}">
+                        <Style BasedOn="{StaticResource ModernButtonStyle}" TargetType="Button">
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=local:AlarmSetupWindow}, Path=IsDarkTheme}" Value="True">
                                     <Setter Property="Foreground" Value="#1E293B" />

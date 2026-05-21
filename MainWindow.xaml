@@ -20,7 +20,7 @@
     mc:Ignorable="d">
 
     <Window.Resources>
-        <!-- 主題資源定義 (將在後台動態更新) -->
+        <!--  主題資源定義 (將在後台動態更新)  -->
         <SolidColorBrush x:Key="WindowBackground" Color="#CC1E1E24" />
         <SolidColorBrush x:Key="WindowBorder" Color="#33FFFFFF" />
         <SolidColorBrush x:Key="TextPrimary" Color="#FFFFFF" />
@@ -38,10 +38,74 @@
                             Width="12"
                             Height="12"
                             Background="Transparent">
-                            <!-- 右下角圓點指示器 -->
-                            <Ellipse Canvas.Left="8" Canvas.Top="8" Width="2" Height="2" Fill="{DynamicResource TextSecondary}" Opacity="0.5" />
-                            <Ellipse Canvas.Left="8" Canvas.Top="4" Width="2" Height="2" Fill="{DynamicResource TextSecondary}" Opacity="0.5" />
-                            <Ellipse Canvas.Left="4" Canvas.Top="8" Width="2" Height="2" Fill="{DynamicResource TextSecondary}" Opacity="0.5" />
+                            <Ellipse
+                                Canvas.Left="2"
+                                Canvas.Top="2"
+                                Width="2"
+                                Height="2"
+                                Fill="{DynamicResource TextSecondary}"
+                                Opacity="0.5"
+                                Visibility="Hidden" />
+                            <Ellipse
+                                Canvas.Left="6"
+                                Canvas.Top="2"
+                                Width="2"
+                                Height="2"
+                                Fill="{DynamicResource TextSecondary}"
+                                Opacity="0.5"
+                                Visibility="Hidden" />
+                            <Ellipse
+                                Canvas.Left="10"
+                                Canvas.Top="2"
+                                Width="2"
+                                Height="2"
+                                Fill="{DynamicResource TextSecondary}"
+                                Opacity="0.5" />
+
+                            <Ellipse
+                                Canvas.Left="2"
+                                Canvas.Top="6"
+                                Width="2"
+                                Height="2"
+                                Fill="{DynamicResource TextSecondary}"
+                                Opacity="0.5"
+                                Visibility="Hidden" />
+                            <Ellipse
+                                Canvas.Left="6"
+                                Canvas.Top="6"
+                                Width="2"
+                                Height="2"
+                                Fill="{DynamicResource TextSecondary}"
+                                Opacity="0.5" />
+                            <Ellipse
+                                Canvas.Left="10"
+                                Canvas.Top="6"
+                                Width="2"
+                                Height="2"
+                                Fill="{DynamicResource TextSecondary}"
+                                Opacity="0.5" />
+
+                            <Ellipse
+                                Canvas.Left="2"
+                                Canvas.Top="10"
+                                Width="2"
+                                Height="2"
+                                Fill="{DynamicResource TextSecondary}"
+                                Opacity="0.5" />
+                            <Ellipse
+                                Canvas.Left="6"
+                                Canvas.Top="10"
+                                Width="2"
+                                Height="2"
+                                Fill="{DynamicResource TextSecondary}"
+                                Opacity="0.5" />
+                            <Ellipse
+                                Canvas.Left="10"
+                                Canvas.Top="10"
+                                Width="2"
+                                Height="2"
+                                Fill="{DynamicResource TextSecondary}"
+                                Opacity="0.5" />
                         </Canvas>
                     </ControlTemplate>
                 </Setter.Value>
@@ -49,7 +113,7 @@
             <Setter Property="Cursor" Value="SizeNWSE" />
         </Style>
 
-        <!-- 工具列按鈕通用樣式 -->
+        <!--  工具列按鈕通用樣式  -->
         <Style x:Key="TitleBarButtonStyle" TargetType="Button">
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="Foreground" Value="{DynamicResource IconForeground}" />
@@ -62,7 +126,10 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border x:Name="border" Background="{TemplateBinding Background}" CornerRadius="6">
+                        <Border
+                            x:Name="border"
+                            Background="{TemplateBinding Background}"
+                            CornerRadius="6">
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
                         </Border>
                         <ControlTemplate.Triggers>
@@ -78,12 +145,18 @@
             </Setter>
         </Style>
 
-        <!-- 關閉按鈕專用樣式 -->
-        <Style x:Key="CloseButtonStyle" TargetType="Button" BasedOn="{StaticResource TitleBarButtonStyle}">
+        <!--  關閉按鈕專用樣式  -->
+        <Style
+            x:Key="CloseButtonStyle"
+            BasedOn="{StaticResource TitleBarButtonStyle}"
+            TargetType="Button">
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border x:Name="border" Background="{TemplateBinding Background}" CornerRadius="6">
+                        <Border
+                            x:Name="border"
+                            Background="{TemplateBinding Background}"
+                            CornerRadius="6">
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
                         </Border>
                         <ControlTemplate.Triggers>
@@ -107,26 +180,29 @@
         BorderBrush="{DynamicResource WindowBorder}"
         BorderThickness="1"
         ClipToBounds="True"
-        CornerRadius="16">
+        CornerRadius="10">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
-            <!-- 工具列區域 -->
+            <!--  工具列區域  -->
             <Border Grid.Row="0" Margin="6,6,6,0">
                 <DockPanel LastChildFill="False">
-                    <!-- 左側控制按鈕 -->
+                    <!--  左側控制按鈕  -->
                     <Button
                         x:Name="btnPinTop"
                         Click="btnPinTop_Click"
                         DockPanel.Dock="Left"
                         Style="{StaticResource TitleBarButtonStyle}"
                         ToolTip="將視窗固定在最上層">
-                        <Path Data="F1 M 12,2 A 2,2 0 0,1 14,4 V 9.58 L 17,13 V 15 H 13 V 21 L 12,22 L 11,21 V 15 H 7 V 13 L 10,9.58 V 4 A 2,2 0 0,1 12,2 Z" 
-                              Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" 
-                              Width="12" Height="12" Stretch="Uniform" />
+                        <Path
+                            Width="12"
+                            Height="12"
+                            Data="F1 M 12,2 A 2,2 0 0,1 14,4 V 9.58 L 17,13 V 15 H 13 V 21 L 12,22 L 11,21 V 15 H 7 V 13 L 10,9.58 V 4 A 2,2 0 0,1 12,2 Z"
+                            Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                            Stretch="Uniform" />
                     </Button>
 
                     <Button
@@ -137,10 +213,20 @@
                         Tag="1"
                         ToolTip="設定鬧鐘1">
                         <Grid>
-                            <Path Data="M12,4C7.58,4 4,7.58 4,12C4,16.42 7.58,20 12,20C16.42,20 20,16.42 20,12C20,7.58 16.42,4 12,4 M12.5,7V12.25L17,14.92L16.25,16.15L11,13V7H12.5 M2.1,5.1L5.9,2.1L7.1,3.7L3.3,6.7L2.1,5.1 M21.9,5.1L20.7,6.7L16.9,3.7L18.1,2.1L21.9,5.1Z" 
-                                  Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" 
-                                  Width="13" Height="13" Stretch="Uniform" />
-                            <TextBlock Text="1" FontSize="7.5" FontWeight="Bold" Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,1,0,0"/>
+                            <Path
+                                Width="13"
+                                Height="13"
+                                Data="M12,4C7.58,4 4,7.58 4,12C4,16.42 7.58,20 12,20C16.42,20 20,16.42 20,12C20,7.58 16.42,4 12,4 M12.5,7V12.25L17,14.92L16.25,16.15L11,13V7H12.5 M2.1,5.1L5.9,2.1L7.1,3.7L3.3,6.7L2.1,5.1 M21.9,5.1L20.7,6.7L16.9,3.7L18.1,2.1L21.9,5.1Z"
+                                Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                Stretch="Uniform" />
+                            <TextBlock
+                                Margin="0,1,0,0"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                FontSize="7.5"
+                                FontWeight="Bold"
+                                Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                Text="1" />
                         </Grid>
                     </Button>
 
@@ -152,23 +238,36 @@
                         Tag="2"
                         ToolTip="設定鬧鐘2">
                         <Grid>
-                            <Path Data="M12,4C7.58,4 4,7.58 4,12C4,16.42 7.58,20 12,20C16.42,20 20,16.42 20,12C20,7.58 16.42,4 12,4 M12.5,7V12.25L17,14.92L16.25,16.15L11,13V7H12.5 M2.1,5.1L5.9,2.1L7.1,3.7L3.3,6.7L2.1,5.1 M21.9,5.1L20.7,6.7L16.9,3.7L18.1,2.1L21.9,5.1Z" 
-                                  Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" 
-                                  Width="13" Height="13" Stretch="Uniform" />
-                            <TextBlock Text="2" FontSize="7.5" FontWeight="Bold" Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,1,0,0"/>
+                            <Path
+                                Width="13"
+                                Height="13"
+                                Data="M12,4C7.58,4 4,7.58 4,12C4,16.42 7.58,20 12,20C16.42,20 20,16.42 20,12C20,7.58 16.42,4 12,4 M12.5,7V12.25L17,14.92L16.25,16.15L11,13V7H12.5 M2.1,5.1L5.9,2.1L7.1,3.7L3.3,6.7L2.1,5.1 M21.9,5.1L20.7,6.7L16.9,3.7L18.1,2.1L21.9,5.1Z"
+                                Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                Stretch="Uniform" />
+                            <TextBlock
+                                Margin="0,1,0,0"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                FontSize="7.5"
+                                FontWeight="Bold"
+                                Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                Text="2" />
                         </Grid>
                     </Button>
 
-                    <!-- 右側控制按鈕 -->
+                    <!--  右側控制按鈕  -->
                     <Button
                         x:Name="btnClose"
                         Click="btnClose_Click"
                         DockPanel.Dock="Right"
                         Style="{StaticResource CloseButtonStyle}"
                         ToolTip="關閉視窗">
-                        <Path Data="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" 
-                              Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" 
-                              Width="10" Height="10" Stretch="Uniform" />
+                        <Path
+                            Width="10"
+                            Height="10"
+                            Data="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
+                            Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                            Stretch="Uniform" />
                     </Button>
 
                     <Button
@@ -177,9 +276,12 @@
                         DockPanel.Dock="Right"
                         Style="{StaticResource TitleBarButtonStyle}"
                         ToolTip="最小化視窗">
-                        <Path Data="M4 11h16v2H4z" 
-                              Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" 
-                              Width="10" Height="10" Stretch="Uniform" />
+                        <Path
+                            Width="10"
+                            Height="10"
+                            Data="M4 11h16v2H4z"
+                            Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                            Stretch="Uniform" />
                     </Button>
 
                     <Button
@@ -188,16 +290,23 @@
                         DockPanel.Dock="Right"
                         Style="{StaticResource TitleBarButtonStyle}"
                         ToolTip="切換主題">
-                        <Path x:Name="themeIcon" Data="M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9" 
-                              Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" 
-                              Width="12" Height="12" Stretch="Uniform" />
+                        <Path
+                            x:Name="themeIcon"
+                            Width="12"
+                            Height="12"
+                            Data="M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9"
+                            Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                            Stretch="Uniform" />
                     </Button>
                 </DockPanel>
             </Border>
 
-            <!-- 時間顯示區域 -->
-            <StackPanel Grid.Row="1" Margin="16,8,16,16" Orientation="Vertical">
-                <!-- 日期文字 -->
+            <!--  時間顯示區域  -->
+            <StackPanel
+                Grid.Row="1"
+                Margin="16,8,16,16"
+                Orientation="Vertical">
+                <!--  日期文字  -->
                 <TextBlock
                     x:Name="DateText"
                     Margin="0,0,0,4"
@@ -208,8 +317,11 @@
                     FontWeight="Bold"
                     Foreground="{DynamicResource TextPrimary}" />
 
-                <!-- 農曆與節氣 -->
-                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,0,6">
+                <!--  農曆與節氣  -->
+                <StackPanel
+                    Margin="0,0,0,0"
+                    VerticalAlignment="Center"
+                    Orientation="Horizontal">
                     <TextBlock
                         x:Name="LunarDateText"
                         VerticalAlignment="Center"
@@ -223,39 +335,40 @@
                         x:Name="LunarTerm"
                         Margin="8,0,0,0"
                         Padding="6,2"
+                        VerticalAlignment="Center"
                         Background="#3310B981"
-                        CornerRadius="4"
-                        VerticalAlignment="Center">
+                        CornerRadius="4">
                         <TextBlock
                             x:Name="LunarTermText"
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center"
                             d:Text="立春"
                             FontFamily="Segoe UI, Microsoft JhengHei UI"
-                            FontSize="11"
+                            FontSize="16"
                             FontWeight="Bold"
                             Foreground="#34D399" />
                     </Border>
                 </StackPanel>
 
-                <!-- 時間主文字 -->
+                <!--  時間主文字  -->
                 <TextBlock
                     x:Name="TimeText"
+                    Margin="0,-10,0,0"
                     HorizontalAlignment="Center"
-                    Margin="0,6,0,0"
                     d:Text="02:10:06"
                     FontFamily="Segoe UI, Microsoft JhengHei UI"
                     FontSize="64"
-                    FontWeight="SemiBold"
+                    FontWeight="Bold"
                     Foreground="{DynamicResource TextPrimary}" />
             </StackPanel>
 
-            <!-- 視窗拖曳調整大小的把手 (對齊内容列右下角) -->
+            <!--  視窗拖曳調整大小的把手 (對齊内容列右下角)  -->
             <Thumb
                 x:Name="ResizeThumb"
                 Grid.Row="1"
                 Width="12"
                 Height="12"
+                Margin="0,0,3,3"
                 HorizontalAlignment="Right"
                 VerticalAlignment="Bottom"
                 DragDelta="ResizeThumb_DragDelta"

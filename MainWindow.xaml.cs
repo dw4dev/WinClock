@@ -23,7 +23,7 @@ namespace WinClock
         private const double TIME_FONT_SIZE = 64;
         private const double DATE_FONT_SIZE = 32;   // 預設 ~32 → 在 330px 寬時剛好比例正確
         private const double LUNAR_FONT_SIZE = 16;  // 農曆文字基準
-        private const double TERM_FONT_SIZE = 11;   // 節氣標籤基準
+        private const double TERM_FONT_SIZE = 14;   // 節氣標籤基準
 
         Dictionary<string, AlarmCfg> alarmCfgs = [];
         Dictionary<string, DispatcherTimer> alarms = [];
@@ -202,8 +202,7 @@ namespace WinClock
             activeAlarmBrush = new SolidColorBrush(isDark ? Color.FromArgb(64, 239, 68, 68) : Color.FromArgb(48, 239, 68, 68));
 
             // 更新節氣標籤調色盤 (莫蘭迪清新半透明配色)
-            if (isDark)
-            {
+            if (isDark) {
                 bc一般 = new SolidColorBrush(Color.FromArgb(40, 255, 255, 255));
                 fc一般 = new SolidColorBrush(Colors.White);
 
@@ -219,8 +218,7 @@ namespace WinClock
                 bc立冬 = new SolidColorBrush(Color.FromArgb(50, 59, 130, 246));
                 fc立冬 = new SolidColorBrush(Color.FromRgb(147, 197, 253));
             }
-            else
-            {
+            else {
                 bc一般 = new SolidColorBrush(Color.FromArgb(20, 0, 0, 0));
                 fc一般 = new SolidColorBrush(Color.FromRgb(30, 41, 59));
 
@@ -262,7 +260,8 @@ namespace WinClock
         {
             if (alarmCfgs.TryGetValue(key, out var cfg) && cfg.IsEnabled) {
                 btn.Background = activeAlarmBrush;
-            } else {
+            }
+            else {
                 btn.Background = Brushes.Transparent;
             }
         }
