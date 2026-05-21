@@ -23,8 +23,8 @@ namespace WinClock
         private const double TIME_FONT_SIZE = 64;
         private const double DATE_FONT_SIZE = 28;
 
-        Dictionary<string, AlarmCfg> alarmCfgs = new();
-        Dictionary<string, DispatcherTimer> alarms = new();
+        Dictionary<string, AlarmCfg> alarmCfgs = [];
+        Dictionary<string, DispatcherTimer> alarms = [];
 
         public bool IsDarkTheme { get; private set; } = true;
         private Brush activePinBrush = Brushes.Transparent;
@@ -82,7 +82,7 @@ namespace WinClock
             }
         }
 
-        static string[] weekdays = { "日", "一", "二", "三", "四", "五", "六" };
+        static readonly string[] weekdays = ["日", "一", "二", "三", "四", "五", "六"];
         private void UpdateTimeDisplay()
         {
             try {
@@ -379,10 +379,11 @@ namespace WinClock
         #region 處理農曆
 
         // 農曆名稱
-        static readonly string[] ChineseMonths = { "??",
+        static readonly string[] ChineseMonths = [
+            "??",
             "正月", "二月", "三月", "四月", "五月", "六月",
-            "七月", "八月", "九月", "十月", "冬月", "臘月",
-        };
+            "七月", "八月", "九月", "十月", "冬月", "臘月"
+        ];
 
         /// <summary>
         /// 取得農曆日期
