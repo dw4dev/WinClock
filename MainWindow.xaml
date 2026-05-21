@@ -204,7 +204,7 @@
                     HorizontalAlignment="Left"
                     d:Text="2024/02/10 (九)"
                     FontFamily="Segoe UI, Microsoft JhengHei UI"
-                    FontSize="28"
+                    FontSize="32"
                     FontWeight="Bold"
                     Foreground="{DynamicResource TextPrimary}" />
 
@@ -215,7 +215,7 @@
                         VerticalAlignment="Center"
                         d:Text="農曆 臘月初六"
                         FontFamily="Segoe UI, Microsoft JhengHei UI"
-                        FontSize="15"
+                        FontSize="16"
                         FontWeight="Normal"
                         Foreground="{DynamicResource TextSecondary}" />
 
@@ -250,9 +250,10 @@
                     Foreground="{DynamicResource TextPrimary}" />
             </StackPanel>
 
-            <!-- 視窗拖曳調整大小的把手 -->
+            <!-- 視窗拖曳調整大小的把手 (對齊内容列右下角) -->
             <Thumb
                 x:Name="ResizeThumb"
+                Grid.Row="1"
                 Width="12"
                 Height="12"
                 HorizontalAlignment="Right"
