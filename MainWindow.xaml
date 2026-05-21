@@ -362,6 +362,18 @@
                     Foreground="{DynamicResource TextPrimary}" />
             </StackPanel>
 
+            <!--  版本資訊 (左下角)  -->
+            <TextBlock
+                x:Name="VersionText"
+                Grid.Row="1"
+                Margin="10,0,0,5"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Bottom"
+                FontFamily="Segoe UI, Microsoft JhengHei UI"
+                FontSize="10"
+                Foreground="{DynamicResource TextSecondary}"
+                Opacity="0.8" />
+
             <!--  視窗拖曳調整大小的把手 (對齊内容列右下角)  -->
             <Thumb
                 x:Name="ResizeThumb"
@@ -376,3 +388,4 @@
         </Grid>
     </Border>
 </Window>
+
