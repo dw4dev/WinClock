@@ -308,8 +308,8 @@ namespace WinClock
                 alarms[key].Tick += (s, e) => {
                     if (cfg.IsPlaySound) {
                         try {
-                            var fld = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                            var mp3 = Path.Combine(fld!, SG.AlarmSounds[cfg.SoundName!]);
+                            var fld = AppContext.BaseDirectory;
+                            var mp3 = Path.Combine(fld, SG.AlarmSounds[cfg.SoundName!]);
                             var mp3FileReader = new Mp3FileReader(mp3);
                             var waveOutEvent = new WaveOutEvent();
                             waveOutEvent.Init(mp3FileReader);
