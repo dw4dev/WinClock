@@ -1,3 +1,5 @@
+using NAudio.Wave;
+using System.IO;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
@@ -9,6 +11,27 @@ namespace WinClock
     /// </summary>
     public partial class MsgWindow : Window
     {
+        private WaveOutEvent? waveOutEvent;
+        private Mp3FileReader? mp3FileReader;
+
+        public bool IsPlaying
+        {
+            get { return (bool)GetValue(IsPlayingProperty); }
+            set { SetValue(IsPlayingProperty, value); }
+        }
+
+        public static readonly DependencyProperty IsPlayingProperty =
+            DependencyProperty.Register("IsPlaying", typeof(bool), typeof(MsgWindow), new PropertyMetadata(false));
+
+        public AlarmCfg? MyAlarmCfg
+        {
+            get { return (AlarmCfg)GetValue(MyAlarmCfgProperty); }
+            set { SetValue(MyAlarmCfgProperty, value); }
+        }
+
+        public static readonly DependencyProperty MyAlarmCfgProperty =
+            DependencyProperty.Register("MyAlarmCfg", typeof(AlarmCfg), typeof(MsgWindow), new PropertyMetadata(null));
+
         public string HeaderText
         {
             get { return (string)GetValue(HeaderTextProperty); }
@@ -85,6 +108,7 @@ namespace WinClock
         private void btnClose_Click(object sender, RoutedEventArgs e)
         {
             DialogResult = true;
+            StopPlayback();
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -99,6 +123,35 @@ namespace WinClock
 
                 // 將動畫應用到視窗的 Opacity 屬性
                 this.BeginAnimation(OpacityProperty, fadeInAnimation);
+            }
+
+            if (MyAlarmCfg is not null && MyAlarmCfg.IsPlaySound && !string.IsNullOrEmpty(MyAlarmCfg.SoundName)) {
+                IsPlaying = true;
+                var fld = AppContext.BaseDirectory;
+                var mp3 = Path.Combine(fld, SG.AlarmSounds[MyAlarmCfg.SoundName]);
+                mp3FileReader = new Mp3FileReader(mp3);
+                waveOutEvent = new WaveOutEvent();
+                waveOutEvent.PlaybackStopped += WaveOutEvent_PlaybackStopped;
+                waveOutEvent.Init(mp3FileReader);
+                waveOutEvent.Play();
+            }
+        }
+
+        private void WaveOutEvent_PlaybackStopped(object? sender, StoppedEventArgs e)
+        {
+            StopPlayback();
+        }
+
+        private void StopPlayback()
+        {
+            if (waveOutEvent != null) {
+                IsPlaying = false;
+                waveOutEvent.PlaybackStopped -= WaveOutEvent_PlaybackStopped;
+                waveOutEvent.Stop();
+                waveOutEvent.Dispose();
+                waveOutEvent = null;
+                mp3FileReader?.Dispose();
+                mp3FileReader = null;
             }
         }
     }

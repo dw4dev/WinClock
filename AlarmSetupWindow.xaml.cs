@@ -140,6 +140,11 @@ namespace WinClock
             waveOutEvent.Play();
         }
 
+        private void btnStop_Click(object sender, RoutedEventArgs e)
+        {
+            StopPlayback();
+        }
+
         private void WaveOutEvent_PlaybackStopped(object? sender, StoppedEventArgs e)
         {
             StopPlayback();

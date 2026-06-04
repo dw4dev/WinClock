@@ -309,24 +309,6 @@ namespace WinClock
 
                 alarms[key] = new() { Interval = cfg.GetTimeSpan() };
                 alarms[key].Tick += (s, e) => {
-                    if (cfg.IsPlaySound) {
-                        try {
-                            var fld = AppContext.BaseDirectory;
-                            var mp3 = Path.Combine(fld, SG.AlarmSounds[cfg.SoundName!]);
-                            var mp3FileReader = new Mp3FileReader(mp3);
-                            var waveOutEvent = new WaveOutEvent();
-                            waveOutEvent.Init(mp3FileReader);
-                            waveOutEvent.Play();
-                            waveOutEvent.PlaybackStopped += (s, e) => {
-                                waveOutEvent.Stop();
-                                waveOutEvent.Dispose();
-                                mp3FileReader.Dispose();
-                            };
-                        }
-                        catch (Exception ex) {
-                            Debug.WriteLine(ex.Message);
-                        }
-                    }
 
                     MsgWindow msgWindow;
                     if (cfg.IsShowMsg) {
@@ -334,7 +316,8 @@ namespace WinClock
                             EnableFadeIn = true,
                             HeaderText = $"鬧鐘{key}",
                             MessageText = cfg?.MsgText ?? $"鬧鐘{key}時間到",
-                            IsDarkTheme = this.IsDarkTheme
+                            IsDarkTheme = this.IsDarkTheme,
+                            MyAlarmCfg = cfg
                         };
                     }
                     else {
@@ -342,7 +325,8 @@ namespace WinClock
                             EnableFadeIn = true,
                             HeaderText = $"鬧鐘{key}",
                             MessageText = $"鬧鐘{key}時間到",
-                            IsDarkTheme = this.IsDarkTheme
+                            IsDarkTheme = this.IsDarkTheme,
+                            MyAlarmCfg = cfg
                         };
                     }
 

@@ -393,33 +393,60 @@
                         IsEditable="False"
                         IsEnabled="{Binding ElementName=chkPlaySound, Path=IsChecked}"
                         SelectedValue="{Binding MyAlarmCfg.SoundName, Mode=TwoWay}" />
-                    <Button
-                        x:Name="btnPlay"
-                        Grid.Column="2"
-                        Width="28"
-                        Height="28"
-                        Margin="8,0,0,0"
-                        Click="btnPlay_Click"
-                        IsEnabled="{Binding MyAlarmCfg.IsPlaySound}"
-                        ToolTip="播放試聽">
-                        <Button.Style>
-                            <Style BasedOn="{StaticResource IconButtonStyle}" TargetType="Button">
-                                <Setter Property="Visibility" Value="Visible" />
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=local:AlarmSetupWindow}, Path=IsPlaying}" Value="True">
-                                        <Setter Property="Visibility" Value="Hidden" />
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Button.Style>
-                        <!--  播放向量圖示  -->
-                        <Path
-                            Width="12"
-                            Height="12"
-                            Data="M8 5v14l11-7z"
-                            Fill="{DynamicResource IconForeground}"
-                            Stretch="Uniform" />
-                    </Button>
+                        <Button
+                            x:Name="btnPlay"
+                            Grid.Column="2"
+                            Width="28"
+                            Height="28"
+                            Margin="8,0,0,0"
+                            Click="btnPlay_Click"
+                            IsEnabled="{Binding MyAlarmCfg.IsPlaySound}"
+                            ToolTip="播放試聽">
+                            <Button.Style>
+                                <Style BasedOn="{StaticResource IconButtonStyle}" TargetType="Button">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=local:AlarmSetupWindow}, Path=IsPlaying}" Value="True">
+                                            <Setter Property="Visibility" Value="Hidden" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                            <!--  播放向量圖示  -->
+                            <Path
+                                Width="12"
+                                Height="12"
+                                Data="M8 5v14l11-7z"
+                                Fill="{DynamicResource IconForeground}"
+                                Stretch="Uniform" />
+                        </Button>
+                        <Button
+                            x:Name="btnStop"
+                            Grid.Column="2"
+                            Width="28"
+                            Height="28"
+                            Margin="8,0,0,0"
+                            Click="btnStop_Click"
+                            IsEnabled="{Binding MyAlarmCfg.IsPlaySound}"
+                            ToolTip="停止播放">
+                            <Button.Style>
+                                <Style BasedOn="{StaticResource IconButtonStyle}" TargetType="Button">
+                                    <Setter Property="Visibility" Value="Hidden" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=local:AlarmSetupWindow}, Path=IsPlaying}" Value="True">
+                                            <Setter Property="Visibility" Value="Visible" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                            <!--  停止向量圖示  -->
+                            <Path
+                                Width="12"
+                                Height="12"
+                                Data="M6 6h12v12H6z"
+                                Fill="{DynamicResource IconForeground}"
+                                Stretch="Uniform" />
+                        </Button>
                 </Grid>
 
                 <!--  文字訊息設定  -->
