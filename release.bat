@@ -6,7 +6,7 @@ echo ====================================
 echo.
 
 set "OUTPUT_DIR=%~dp0build\publish"
-set "PROJ=%~dp0WinClock.csproj"
+set "PROJ=%~dp0src\WinClock.csproj"
 
 echo [1/2] Cleaning old publish files...
 if exist "%OUTPUT_DIR%" rmdir /s /q "%OUTPUT_DIR%"

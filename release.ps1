@@ -1,6 +1,6 @@
 $projectDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $outputDir  = Join-Path $projectDir "build\publish"
-$projFile   = Join-Path $projectDir "WinClock.csproj"
+$projFile   = Join-Path $projectDir "src\WinClock.csproj"
 
 Write-Host ""
 Write-Host "===================================="
