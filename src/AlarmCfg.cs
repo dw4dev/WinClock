@@ -8,6 +8,7 @@
         private DateTime alarmDate = DateTime.Today;
         private int hour = DateTime.Now.Hour;
         private int minute = DateTime.Now.Minute;
+        private int second = 0;
         private bool isPlaySound = false;
         private string? soundName = null;
         private bool isShowMsg = true;
@@ -38,6 +39,18 @@
             get => minute; set
             {
                 minute = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// 秒。設定視窗不提供輸入（一律 0）；只有貪睡會設成非 0，讓「5 分鐘後」精確到秒。
+        /// </summary>
+        public int Second
+        {
+            get => second; set
+            {
+                second = value;
                 OnPropertyChanged();
             }
         }
@@ -92,7 +105,36 @@
         public DateTime GetTargetDateTime()
         {
             return new DateTime(
-                AlarmDate.Year, AlarmDate.Month, AlarmDate.Day, Hour, Minute, 0);
+                AlarmDate.Year, AlarmDate.Month, AlarmDate.Day, Hour, Minute, Second);
+        }
+
+        /// <summary>
+        /// 用一個時間點設定鬧鐘的日期、時、分、秒。
+        /// </summary>
+        public void SetTarget(DateTime target)
+        {
+            AlarmDate = target.Date;
+            Hour = target.Hour;
+            Minute = target.Minute;
+            Second = target.Second;
+        }
+
+        /// <summary>
+        /// 建立一份獨立的副本。設定視窗編輯副本，按「取消」時原本的鬧鐘不受影響。
+        /// </summary>
+        public AlarmCfg Clone()
+        {
+            return new AlarmCfg {
+                AlarmDate = AlarmDate,
+                Hour = Hour,
+                Minute = Minute,
+                Second = Second,
+                IsPlaySound = IsPlaySound,
+                SoundName = SoundName,
+                IsShowMsg = IsShowMsg,
+                MsgText = MsgText,
+                IsEnabled = IsEnabled
+            };
         }
 
         public TimeSpan GetTimeSpan()

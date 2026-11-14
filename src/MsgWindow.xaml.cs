@@ -8,6 +8,10 @@ namespace WinClock
 {
     /// <summary>
     /// MsgWindow.xaml 的互動邏輯
+    /// <para>
+    /// 視窗持久化：退出（opt-out）。原因：固定大小（NoResize）的提醒對話框，每次置中顯示才能引起注意
+    /// （docs/kb/00-ui-rules.md §2.1）。
+    /// </para>
     /// </summary>
     public partial class MsgWindow : Window
     {
@@ -79,6 +83,53 @@ namespace WinClock
             }
         }
 
+        /// <summary>
+        /// 貪睡的分鐘數。大於 0 時顯示「N 分鐘後提醒」按鈕；0 表示不提供貪睡。
+        /// </summary>
+        public int SnoozeMinutes
+        {
+            get { return (int)GetValue(SnoozeMinutesProperty); }
+            set { SetValue(SnoozeMinutesProperty, value); }
+        }
+
+        public static readonly DependencyProperty SnoozeMinutesProperty =
+            DependencyProperty.Register("SnoozeMinutes", typeof(int), typeof(MsgWindow),
+                new PropertyMetadata(0, OnSnoozeMinutesChanged));
+
+        private static void OnSnoozeMinutesChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (d is MsgWindow window) {
+                var minutes = (int)e.NewValue;
+                window.SnoozeButtonText = $"{minutes} 分鐘後提醒";
+                window.SnoozeVisibility = minutes > 0 ? Visibility.Visible : Visibility.Collapsed;
+            }
+        }
+
+        public string SnoozeButtonText
+        {
+            get { return (string)GetValue(SnoozeButtonTextProperty); }
+            private set { SetValue(SnoozeButtonTextProperty, value); }
+        }
+
+        public static readonly DependencyProperty SnoozeButtonTextProperty =
+            DependencyProperty.Register("SnoozeButtonText", typeof(string), typeof(MsgWindow),
+                new PropertyMetadata(""));
+
+        public Visibility SnoozeVisibility
+        {
+            get { return (Visibility)GetValue(SnoozeVisibilityProperty); }
+            private set { SetValue(SnoozeVisibilityProperty, value); }
+        }
+
+        public static readonly DependencyProperty SnoozeVisibilityProperty =
+            DependencyProperty.Register("SnoozeVisibility", typeof(Visibility), typeof(MsgWindow),
+                new PropertyMetadata(Visibility.Collapsed));
+
+        /// <summary>
+        /// 使用者按了貪睡按鈕。視窗關閉後由呼叫端讀取。
+        /// </summary>
+        public bool SnoozeRequested { get; private set; }
+
         public MsgWindow()
         {
             InitializeComponent();
@@ -109,6 +160,13 @@ namespace WinClock
         {
             DialogResult = true;
             StopPlayback();
+        }
+
+        private void btnSnooze_Click(object sender, RoutedEventArgs e)
+        {
+            SnoozeRequested = true;
+            StopPlayback();
+            DialogResult = true;
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)

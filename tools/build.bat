@@ -1,6 +1,7 @@
 @echo off
 rem Wrapper for build.ps1 (bypasses PowerShell execution policy).
 rem Usage: build.bat [-Configuration Debug|Release] [-Clean] [-Solution <path>]
+rem Build only. To publish to build\publish, use release.bat.
 rem Keep this file ASCII-only to avoid codepage issues; chcp 65001 makes
 rem the UTF-8 Chinese output from the ps1 display correctly when redirected.
 
