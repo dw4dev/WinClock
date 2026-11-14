@@ -6,6 +6,7 @@
     xmlns:local="clr-namespace:WinClock"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Title="訊息視窗"
+    AutomationProperties.AutomationId="Msg_Window"
     Width="420"
     AllowsTransparency="True"
     Background="Transparent"
@@ -105,6 +106,7 @@
             <Grid Grid.Row="0">
                 <TextBlock
                     x:Name="txtTitle"
+                    AutomationProperties.AutomationId="Msg_HeaderText"
                     HorizontalAlignment="Left"
                     VerticalAlignment="Center"
                     FontSize="16"
@@ -114,6 +116,8 @@
 
                 <Button
                     x:Name="btnHeaderClose"
+                    AutomationProperties.AutomationId="Msg_HeaderCloseButton"
+                    AutomationProperties.Name="關閉"
                     Click="btnClose_Click"
                     HorizontalAlignment="Right"
                     Style="{StaticResource IconButtonStyle}">
@@ -131,6 +135,7 @@
                 <Border MinHeight="60" Padding="4">
                     <TextBlock
                         x:Name="txtMessage"
+                        AutomationProperties.AutomationId="Msg_MessageText"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
                         FontFamily="Microsoft JhengHei UI"
@@ -141,14 +146,28 @@
                 </Border>
             </ScrollViewer>
 
-            <!-- 關閉按鈕 -->
-            <Button
-                x:Name="btnClose"
+            <!-- 底部按鈕：貪睡（SnoozeMinutes > 0 時顯示）與關閉 -->
+            <StackPanel
                 Grid.Row="4"
+                HorizontalAlignment="Center"
+                Orientation="Horizontal">
+            <Button
+                x:Name="btnSnooze"
                 Width="120"
                 Height="32"
-                HorizontalAlignment="Center"
+                Margin="0,0,12,0"
+                AutomationProperties.AutomationId="Msg_SnoozeButton"
+                Click="btnSnooze_Click"
+                Content="{Binding SnoozeButtonText}"
+                Style="{StaticResource ModernButtonStyle}"
+                Visibility="{Binding SnoozeVisibility}" />
+            <Button
+                x:Name="btnClose"
+                Width="120"
+                Height="32"
+                AutomationProperties.AutomationId="Msg_CloseButton"
                 Content="關 閉"
+                IsDefault="True"
                 Click="btnClose_Click">
                 <Button.Style>
                     <Style TargetType="Button" BasedOn="{StaticResource ModernButtonStyle}">
@@ -167,6 +186,7 @@
                     </Style>
                 </Button.Style>
             </Button>
+            </StackPanel>
         </Grid>
     </Border>
 </Window>

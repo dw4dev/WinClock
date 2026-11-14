@@ -1,12 +1,14 @@
 ﻿#Requires -Version 5.1
 <#
 .SYNOPSIS
-    一鍵編譯本專案的方案檔（只編譯，不執行測試）。
+    一鍵編譯本專案的方案檔（只編譯，不執行測試，不發佈）。
 
 .DESCRIPTION
     通用腳本：自動尋找 repo 內的 .sln／.slnx（先找根目錄，再往下找 2 層）。
     找到多個方案檔時，使用最靠近根目錄的那一個；要指定時用 -Solution。
-    測試請用 run-tests.ps1。
+    編譯成功後列出輸出的 exe（路徑、版號、時間），避免執行到其他資料夾的舊版。
+    輸出位置由各專案的 csproj 決定（WinClock：build\<組態>\）。
+    測試請用 run-tests.ps1；發佈到 build\publish 請用 tools\release.bat。
 
 .EXAMPLE
     .\tools\build.ps1                          # Debug 編譯
@@ -71,6 +73,17 @@ try {
 Write-Host ''
 if ($code -eq 0) {
     Write-Host "==> 編譯成功（$Configuration）" -ForegroundColor Green
+
+    # 列出這次的輸出 exe（bin\<組態> 或 build\<組態>），避免執行到其他資料夾的舊版。
+    $exes = @(Get-ChildItem -LiteralPath $root -Recurse -File -Filter *.exe -ErrorAction SilentlyContinue |
+        Where-Object { $_.FullName -match "\\(bin|build)\\$Configuration\\" -and $_.FullName -notmatch '\\(obj|ref|publish)\\' -and $_.Name -notmatch '^(testhost|createdump)' })
+    if ($exes.Count -gt 0) {
+        Write-Host '==> 輸出：' -ForegroundColor Cyan
+        foreach ($e in $exes) {
+            Write-Host ("  {0}  {1}  {2:yyyy-MM-dd HH:mm}" -f $e.FullName.Substring($root.Length + 1), $e.VersionInfo.ProductVersion, $e.LastWriteTime)
+        }
+        Write-Host '  版號由 nbgv 依 commit 產生；尚未 commit 的修改不會改變版號。' -ForegroundColor DarkGray
+    }
 } else {
     Write-Host "==> 編譯失敗（exit $code）" -ForegroundColor Red
 }
