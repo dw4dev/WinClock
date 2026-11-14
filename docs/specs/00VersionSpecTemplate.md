@@ -135,6 +135,18 @@ Acceptance Criteria:
 
 -
 
+## UI Testability（有 UI 時必填；規則見 `docs/kb/00-ui-rules.md` §1）
+
+- 新增／修改的互動控制項與視窗，都設 `AutomationProperties.AutomationId`
+- 非同步操作的狀態（忙碌／完成／錯誤），可由 UI Automation 讀取
+- 本版例外與原因：
+
+## Window State Persistence（有 UI 時必填；規則見 `docs/kb/00-ui-rules.md` §2）
+
+- 預設：所有可移動或可調整大小的視窗，記憶位置、尺寸、最大化狀態（走共用視窗基底）
+- 不記憶的視窗與原因：
+- 本版要保存的視窗客製項目（欄寬、分割線、分頁等）：
+
 ---
 
 # Initial Technical Direction
