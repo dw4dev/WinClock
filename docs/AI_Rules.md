@@ -56,8 +56,9 @@ Skip: history, completed phases, old specs, release notes, logs
   1. `docs/phases/vX.Y/phase-0Xx.md` (the phase dev doc; include adjacent phase docs if the work spans them)
   2. any `Reference:` resources it points to under `docs/specs/resources/vX.Y/`
   3. `docs/kb/00-code-review.md` — ALWAYS (universal code-smell checklist; cross-project)
-  4. `docs/kb/coding-rules.md` — ALWAYS (Solomon_Midas architectural invariants; cross-cutting across every phase, never left to keyword search)
-  5. other relevant ADR / KB (search by the phase's topic)
+  4. `docs/kb/00-ui-rules.md` — ALWAYS when the work adds or changes UI (universal UI checklist: UI Automation + window persistence; cross-project)
+  5. `docs/kb/coding-rules.md` — ALWAYS once it exists (WinClock architectural invariants; cross-cutting across every phase, never left to keyword search)
+  6. other relevant ADR / KB (search by the phase's topic)
 - If the phase doc or a needed reference resource is missing/empty, **stop and ask** — do not infer the spec from current.md.
 
 ## Memory
@@ -121,6 +122,13 @@ Resume from NEXT
 
 task > state > tokens
 compression > context growth
+
+## UI Baseline (2026-11-14, user directive)
+
+Applies to every window, dialog, and control this project adds or changes. Detail and self-review checklist: `docs/kb/00-ui-rules.md`.
+
+- **Design UI for UI Automation.** Give every interactive control, every value a test must read, and every Window a stable `AutomationProperties.AutomationId`. Use standard controls (or provide an `AutomationPeer`), and expose busy/done/error state through readable elements. Treat an AutomationId as a public contract.
+- **Persist window position and size by default.** Every movable or resizable window restores its position, size, and maximized state through the shared window base — never hand-rolled per window. Opt-out must be explicit, with the reason. Window-specific layout state (column widths, splitter ratios, selected tab) goes through the same mechanism.
 
 ## Git / Commit
 
