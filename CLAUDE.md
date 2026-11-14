@@ -1,4 +1,4 @@
-# Solomon_Midas — 開工起手式
+# WinClock — 開工起手式
 
 本檔為專案根目錄 `CLAUDE.md`，每個 session 開始時會自動載入。目的：確保下列兩份文件
 **不必每次手動 `@` 附加**，一開始就在 context 裡。
