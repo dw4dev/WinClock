@@ -10,6 +10,10 @@ namespace WinClock
 {
     /// <summary>
     /// AlarmSetupWindow.xaml 的互動邏輯
+    /// <para>
+    /// 視窗持久化：退出（opt-out）。原因：固定大小（NoResize）的設定對話框，每次置中顯示
+    /// （docs/kb/00-ui-rules.md §2.1）。
+    /// </para>
     /// </summary>
     public partial class AlarmSetupWindow : Window
     {
@@ -104,7 +108,8 @@ namespace WinClock
 
         private void btnOK_Click(object sender, RoutedEventArgs e)
         {
-            if (MyAlarmCfg!.GetMilliseconds() <= 2000) {
+            // 用 TimeSpan 比較：GetMilliseconds() 轉 int，超過約 24.8 天會溢位成負數。
+            if (MyAlarmCfg!.GetTimeSpan() <= TimeSpan.FromSeconds(2)) {
                 MessageBox.Show("鬧鐘時間不正確\n請重新設定", "警告", MessageBoxButton.OK, MessageBoxImage.Exclamation);
                 return;
             }
