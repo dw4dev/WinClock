@@ -3,10 +3,13 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:dw="http://schemas.dwtoolkit/wpf"
     xmlns:local="clr-namespace:WinClock"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Title="桌面時鐘"
     Width="330"
+    dw:WindowPersistence.Key="Main"
+    AutomationProperties.AutomationId="Main_Window"
     MinWidth="330"
     MaxWidth="800"
     AllowsTransparency="True"
@@ -173,6 +176,18 @@
                 </Setter.Value>
             </Setter>
         </Style>
+
+        <!--  生效中鬧鐘按鈕的底色 (將在後台依主題更新)  -->
+        <SolidColorBrush x:Key="ActiveAlarmBackground" Color="#40EF4444" />
+
+        <!--  鬧鐘按鈕與「+」按鈕：比一般工具列按鈕窄，最小寬度 330 時放得下 5 個鬧鐘  -->
+        <Style
+            x:Key="AlarmButtonStyle"
+            BasedOn="{StaticResource TitleBarButtonStyle}"
+            TargetType="Button">
+            <Setter Property="Width" Value="26" />
+            <Setter Property="Margin" Value="1,2" />
+        </Style>
     </Window.Resources>
 
     <Border
@@ -205,54 +220,62 @@
                             Stretch="Uniform" />
                     </Button>
 
-                    <Button
-                        x:Name="btnAlarm1"
-                        Click="btnAlarm_Click"
+                    <!--  生效中的鬧鐘：每個鬧鐘一個按鈕（最多 5 個），由 MainWindow.alarmItems 提供  -->
+                    <ItemsControl
+                        x:Name="AlarmButtons"
                         DockPanel.Dock="Left"
-                        Style="{StaticResource TitleBarButtonStyle}"
-                        Tag="1"
-                        ToolTip="設定鬧鐘1">
-                        <Grid>
-                            <Path
-                                Width="13"
-                                Height="13"
-                                Data="M12,4C7.58,4 4,7.58 4,12C4,16.42 7.58,20 12,20C16.42,20 20,16.42 20,12C20,7.58 16.42,4 12,4 M12.5,7V12.25L17,14.92L16.25,16.15L11,13V7H12.5 M2.1,5.1L5.9,2.1L7.1,3.7L3.3,6.7L2.1,5.1 M21.9,5.1L20.7,6.7L16.9,3.7L18.1,2.1L21.9,5.1Z"
-                                Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
-                                Stretch="Uniform" />
-                            <TextBlock
-                                Margin="0,1,0,0"
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Center"
-                                FontSize="7.5"
-                                FontWeight="Bold"
-                                Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
-                                Text="1" />
-                        </Grid>
-                    </Button>
+                        Focusable="False">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="{x:Type local:AlarmItem}">
+                                <Button
+                                    AutomationProperties.AutomationId="{Binding AutomationId}"
+                                    AutomationProperties.Name="{Binding DisplayName}"
+                                    Background="{DynamicResource ActiveAlarmBackground}"
+                                    Click="btnAlarm_Click"
+                                    Style="{StaticResource AlarmButtonStyle}"
+                                    ToolTip="{Binding ToolTipText}"
+                                    ToolTipOpening="btnAlarm_ToolTipOpening">
+                                    <Grid>
+                                        <Path
+                                            Width="13"
+                                            Height="13"
+                                            Data="M12,4C7.58,4 4,7.58 4,12C4,16.42 7.58,20 12,20C16.42,20 20,16.42 20,12C20,7.58 16.42,4 12,4 M12.5,7V12.25L17,14.92L16.25,16.15L11,13V7H12.5 M2.1,5.1L5.9,2.1L7.1,3.7L3.3,6.7L2.1,5.1 M21.9,5.1L20.7,6.7L16.9,3.7L18.1,2.1L21.9,5.1Z"
+                                            Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                            Stretch="Uniform" />
+                                        <TextBlock
+                                            Margin="0,1,0,0"
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            FontSize="7.5"
+                                            FontWeight="Bold"
+                                            Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                            Text="{Binding Number}" />
+                                    </Grid>
+                                </Button>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
 
+                    <!--  新增鬧鐘（已達上限時隱藏）  -->
                     <Button
-                        x:Name="btnAlarm2"
-                        Click="btnAlarm_Click"
+                        x:Name="btnAddAlarm"
+                        AutomationProperties.AutomationId="Main_AddAlarmButton"
+                        AutomationProperties.Name="新增鬧鐘"
+                        Click="btnAddAlarm_Click"
                         DockPanel.Dock="Left"
-                        Style="{StaticResource TitleBarButtonStyle}"
-                        Tag="2"
-                        ToolTip="設定鬧鐘2">
-                        <Grid>
-                            <Path
-                                Width="13"
-                                Height="13"
-                                Data="M12,4C7.58,4 4,7.58 4,12C4,16.42 7.58,20 12,20C16.42,20 20,16.42 20,12C20,7.58 16.42,4 12,4 M12.5,7V12.25L17,14.92L16.25,16.15L11,13V7H12.5 M2.1,5.1L5.9,2.1L7.1,3.7L3.3,6.7L2.1,5.1 M21.9,5.1L20.7,6.7L16.9,3.7L18.1,2.1L21.9,5.1Z"
-                                Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
-                                Stretch="Uniform" />
-                            <TextBlock
-                                Margin="0,1,0,0"
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Center"
-                                FontSize="7.5"
-                                FontWeight="Bold"
-                                Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
-                                Text="2" />
-                        </Grid>
+                        Style="{StaticResource AlarmButtonStyle}"
+                        ToolTip="新增鬧鐘">
+                        <Path
+                            Width="10"
+                            Height="10"
+                            Data="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"
+                            Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                            Stretch="Uniform" />
                     </Button>
 
                     <!--  右側控制按鈕  -->

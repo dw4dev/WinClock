@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -8,14 +9,20 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
 
+using DWToolkit.Wpf.Windowing;
+
 using NAudio.Wave;
 
 namespace WinClock
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
+    /// <para>
+    /// 視窗位置與寬度由 DWToolkit 記住（XAML 的 dw:WindowPersistence.Key="Main"）。
+    /// 主題與釘選狀態透過 <see cref="IWindowExtraStateOwner"/> 存在同一份紀錄。
+    /// </para>
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : Window, IWindowExtraStateOwner
     {
         private readonly DispatcherTimer timer;
         private string nowDate = "", lunarDate = "";
@@ -25,12 +32,23 @@ namespace WinClock
         private const double LUNAR_FONT_SIZE = 16;  // 農曆文字基準
         private const double TERM_FONT_SIZE = 14;   // 節氣標籤基準
 
-        Dictionary<string, AlarmCfg> alarmCfgs = [];
-        Dictionary<string, DispatcherTimer> alarms = [];
+        /// <summary>鬧鐘數量上限。之後視情況開放。</summary>
+        private const int MaxAlarms = 5;
+
+        /// <summary>貪睡的分鐘數。</summary>
+        private const int SnoozeMinutes = 5;
+
+        /// <summary>
+        /// 鬧鐘計時器的最長檢查間隔。計時器不直接等到鬧鐘時間：
+        /// DispatcherTimer 的間隔上限約 24.8 天，而且電腦睡眠後間隔會不準，所以定期重新比對時間。
+        /// </summary>
+        private static readonly TimeSpan AlarmCheckInterval = TimeSpan.FromSeconds(30);
+
+        /// <summary>生效中的鬧鐘，順序就是工具列按鈕的順序。</summary>
+        private readonly ObservableCollection<AlarmItem> alarmItems = [];
 
         public bool IsDarkTheme { get; private set; } = true;
         private Brush activePinBrush = Brushes.Transparent;
-        private Brush activeAlarmBrush = Brushes.Transparent;
 
         // 季節標籤背景與前景顏色 (會根據主題在 ApplyTheme 中動態更新)
         private Brush bc一般 = Brushes.Transparent;
@@ -51,7 +69,10 @@ namespace WinClock
             // 顯示版本資訊 (由 Nerdbank.GitVersioning 自動產生)
             VersionText.Text = $"v{ThisAssembly.AssemblyInformationalVersion}";
 
+            AlarmButtons.ItemsSource = alarmItems;
+
             ApplyTheme(true); // 預設使用深色磨砂主題
+            LoadAlarms();     // 還原上次關閉時尚未到時間的鬧鐘
 
             timer = new DispatcherTimer {
                 Interval = TimeSpan.FromSeconds(1)
@@ -202,7 +223,7 @@ namespace WinClock
 
             // 設定釘選與鬧鐘啟用時的半透明效果色
             activePinBrush = new SolidColorBrush(isDark ? Color.FromArgb(64, 16, 185, 129) : Color.FromArgb(48, 16, 185, 129));
-            activeAlarmBrush = new SolidColorBrush(isDark ? Color.FromArgb(64, 239, 68, 68) : Color.FromArgb(48, 239, 68, 68));
+            this.Resources["ActiveAlarmBackground"] = new SolidColorBrush(isDark ? Color.FromArgb(64, 239, 68, 68) : Color.FromArgb(48, 239, 68, 68));
 
             // 更新節氣標籤調色盤 (莫蘭迪清新半透明配色)
             if (isDark) {
@@ -254,107 +275,225 @@ namespace WinClock
             // 釘選按鈕
             btnPinTop.Background = this.Topmost ? activePinBrush : Brushes.Transparent;
 
-            // 鬧鐘按鈕 1 與 2
-            UpdateAlarmButtonVisual("1", btnAlarm1);
-            UpdateAlarmButtonVisual("2", btnAlarm2);
+            // 「+」按鈕：鬧鐘達上限時隱藏
+            btnAddAlarm.Visibility = alarmItems.Count < MaxAlarms ? Visibility.Visible : Visibility.Collapsed;
         }
 
-        private void UpdateAlarmButtonVisual(string key, Button btn)
+        #region 視窗擴充狀態（DWToolkit：主題與釘選）
+
+        /// <summary>
+        /// 視窗關閉時由 DWToolkit 呼叫：保存主題與釘選狀態。
+        /// </summary>
+        public void CollectExtraState(WindowExtraState state)
         {
-            if (alarmCfgs.TryGetValue(key, out var cfg) && cfg.IsEnabled) {
-                btn.Background = activeAlarmBrush;
-            }
-            else {
-                btn.Background = Brushes.Transparent;
-            }
+            state.Set("darkTheme", IsDarkTheme);
+            state.Set("topmost", Topmost);
         }
 
-        private void btnAlarm_Click(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// 視窗顯示前由 DWToolkit 呼叫（只在有上次紀錄時）：還原主題與釘選狀態。
+        /// </summary>
+        public void ApplyExtraState(WindowExtraState state)
         {
-            if (sender is not Button btn || btn.Tag == null) return;
-            var key = btn.Tag.ToString() ?? "";
-            if (!alarmCfgs.TryGetValue(key, out var alarmCfg))
-                alarmCfg = new();
+            Topmost = state.GetBool("topmost", Topmost);
+            ApplyTheme(state.GetBool("darkTheme", IsDarkTheme));
+        }
 
-            if (!alarmCfg.IsEnabled)
-                alarmCfg.AddMinutes(5);
+        #endregion
 
-            var alarmSetupWindow = new AlarmSetupWindow {
-                MyAlarmCfg = alarmCfg,
-                IsDarkTheme = this.IsDarkTheme
-            };
-            alarmSetupWindow.Topmost = this.Topmost;
-            alarmSetupWindow.ShowDialog();
-            if (alarmSetupWindow.DialogResult == true) {
-                // 清除鬧鐘
-                if (alarmSetupWindow.MyAlarmCfg == null) {
-                    CleanAlarm(key);
-                    UpdateButtonVisuals();
-                    return;
-                }
+        #region 鬧鐘
 
-                // 設定鬧鐘
-                alarmCfgs[key] = alarmSetupWindow.MyAlarmCfg;
-                var cfg = alarmCfgs[key];
-                if (cfg.IsEnabled) {
-                    // 鬧鐘時間異動，重新設定
-                    if (alarms.TryGetValue(key, out var timer)) {
-                        timer.Stop();
-                        timer.Interval = cfg.GetTimeSpan();
-                        timer.Start();
-                        UpdateButtonVisuals();
-                        return;
-                    }
-                }
-
-                alarms[key] = new() { Interval = cfg.GetTimeSpan() };
-                alarms[key].Tick += (s, e) => {
-
-                    MsgWindow msgWindow;
-                    if (cfg.IsShowMsg) {
-                        msgWindow = new MsgWindow {
-                            EnableFadeIn = true,
-                            HeaderText = $"鬧鐘{key}",
-                            MessageText = cfg?.MsgText ?? $"鬧鐘{key}時間到",
-                            IsDarkTheme = this.IsDarkTheme,
-                            MyAlarmCfg = cfg
-                        };
-                    }
-                    else {
-                        msgWindow = new MsgWindow {
-                            EnableFadeIn = true,
-                            HeaderText = $"鬧鐘{key}",
-                            MessageText = $"鬧鐘{key}時間到",
-                            IsDarkTheme = this.IsDarkTheme,
-                            MyAlarmCfg = cfg
-                        };
-                    }
-
-                    alarms[key].Stop();
-                    alarmCfgs[key].IsEnabled = false;
-                    CleanAlarm(key);
-                    UpdateButtonVisuals();
-
-                    msgWindow.ShowDialog();
-                };
-
-                alarms[key].Start();
-                cfg.IsEnabled = true;
-                UpdateButtonVisuals();
+        /// <summary>
+        /// 啟動時還原 alarms.json 內尚未到時間的鬧鐘。
+        /// </summary>
+        private void LoadAlarms()
+        {
+            foreach (var cfg in AlarmStore.Load(MaxAlarms)) {
+                AddAlarm(cfg, save: false);
             }
         }
 
         /// <summary>
-        /// 表示清除指定鬧鐘
+        /// 「+」按鈕：新增一個鬧鐘。
         /// </summary>
-        void CleanAlarm(string key)
+        private void btnAddAlarm_Click(object sender, RoutedEventArgs e)
         {
-            alarmCfgs.Remove(key);
-            if (alarms.TryGetValue(key, out var timer)) {
-                timer.Stop();
-                alarms.Remove(key);
+            if (alarmItems.Count >= MaxAlarms) return;
+
+            var cfg = new AlarmCfg();
+            cfg.AddMinutes(5);
+
+            if (!ShowAlarmSetup(cfg, out var edited) || edited is null) return;
+            if (alarmItems.Count >= MaxAlarms) return;
+
+            AddAlarm(edited);
+        }
+
+        /// <summary>
+        /// 鬧鐘按鈕：修改或移除這個鬧鐘。
+        /// </summary>
+        private void btnAlarm_Click(object sender, RoutedEventArgs e)
+        {
+            if ((sender as FrameworkElement)?.DataContext is not AlarmItem item) return;
+
+            // 編輯副本：按「取消」時，原本的鬧鐘不受影響。
+            var original = item.Cfg;
+            if (!ShowAlarmSetup(original.Clone(), out var edited)) return;
+
+            // 設定視窗開啟期間，這個鬧鐘可能已經響完並被移除。
+            if (!alarmItems.Contains(item)) {
+                if (edited is not null && alarmItems.Count < MaxAlarms) AddAlarm(Normalize(edited, original));
+                return;
+            }
+
+            // 「移除」按鈕
+            if (edited is null) {
+                RemoveAlarm(item);
+                return;
+            }
+
+            item.Cfg = Normalize(edited, original);
+            ScheduleAlarm(item);
+            OnAlarmsChanged(save: true);
+        }
+
+        /// <summary>
+        /// 滑鼠移到鬧鐘按鈕時，重新計算提示文字（剩餘時間會改變）。
+        /// </summary>
+        private void btnAlarm_ToolTipOpening(object sender, ToolTipEventArgs e)
+        {
+            if ((sender as FrameworkElement)?.DataContext is AlarmItem item) item.RefreshToolTip();
+        }
+
+        /// <summary>
+        /// 開啟鬧鐘設定視窗。回傳 true 表示使用者按了「確定」或「移除」；
+        /// <paramref name="result"/> 為 null 表示「移除」。
+        /// </summary>
+        private bool ShowAlarmSetup(AlarmCfg cfg, out AlarmCfg? result)
+        {
+            var alarmSetupWindow = new AlarmSetupWindow {
+                MyAlarmCfg = cfg,
+                IsDarkTheme = this.IsDarkTheme
+            };
+            alarmSetupWindow.Topmost = this.Topmost;
+
+            var confirmed = alarmSetupWindow.ShowDialog() == true;
+            result = alarmSetupWindow.MyAlarmCfg;
+            return confirmed;
+        }
+
+        /// <summary>
+        /// 整理設定視窗傳回的鬧鐘：標成啟用；使用者改過日期或時分時，秒歸零
+        /// （秒只有貪睡會用到，設定視窗沒有秒的欄位）。
+        /// </summary>
+        private static AlarmCfg Normalize(AlarmCfg edited, AlarmCfg original)
+        {
+            edited.IsEnabled = true;
+            if (edited.AlarmDate.Date != original.AlarmDate.Date
+                || edited.Hour != original.Hour
+                || edited.Minute != original.Minute) {
+                edited.Second = 0;
+            }
+            return edited;
+        }
+
+        private AlarmItem AddAlarm(AlarmCfg cfg, bool save = true)
+        {
+            cfg.IsEnabled = true;
+
+            var item = new AlarmItem(cfg);
+            item.Timer = new DispatcherTimer();
+            item.Timer.Tick += (s, e) => OnAlarmTimerTick(item);
+
+            alarmItems.Add(item);
+            ScheduleAlarm(item);
+            OnAlarmsChanged(save);
+            return item;
+        }
+
+        private void RemoveAlarm(AlarmItem item, bool save = true)
+        {
+            item.Timer?.Stop();
+            item.Timer = null;
+            alarmItems.Remove(item);
+            OnAlarmsChanged(save);
+        }
+
+        /// <summary>
+        /// 鬧鐘清單或內容改變後：重新編號、更新按鈕、寫入 alarms.json。
+        /// </summary>
+        private void OnAlarmsChanged(bool save)
+        {
+            for (int i = 0; i < alarmItems.Count; i++) {
+                if (alarmItems[i].Number != i + 1) alarmItems[i].Number = i + 1;
+            }
+
+            UpdateButtonVisuals();
+
+            if (save) AlarmStore.Save(alarmItems.Select(a => a.Cfg));
+        }
+
+        /// <summary>
+        /// 依剩餘時間設定計時器。剩餘時間超過檢查間隔時，先等一個檢查間隔再重新比對。
+        /// </summary>
+        private void ScheduleAlarm(AlarmItem item)
+        {
+            if (item.Timer is null) return;
+
+            item.Timer.Stop();
+
+            var remaining = item.Cfg.GetTimeSpan();
+            if (remaining < TimeSpan.FromMilliseconds(50)) remaining = TimeSpan.FromMilliseconds(50);
+
+            item.Timer.Interval = remaining < AlarmCheckInterval ? remaining : AlarmCheckInterval;
+            item.Timer.Start();
+        }
+
+        private void OnAlarmTimerTick(AlarmItem item)
+        {
+            if (!alarmItems.Contains(item)) {
+                item.Timer?.Stop();
+                return;
+            }
+
+            if (item.Cfg.GetTimeSpan() > TimeSpan.Zero) {
+                ScheduleAlarm(item);
+                return;
+            }
+
+            FireAlarm(item);
+        }
+
+        /// <summary>
+        /// 鬧鐘時間到：移除鬧鐘、顯示訊息視窗；使用者選擇貪睡時，建立一個新的鬧鐘。
+        /// </summary>
+        private void FireAlarm(AlarmItem item)
+        {
+            var cfg = item.Cfg;
+            var name = item.DisplayName;
+
+            cfg.IsEnabled = false;
+            RemoveAlarm(item);
+
+            var msgWindow = new MsgWindow {
+                EnableFadeIn = true,
+                HeaderText = name,
+                MessageText = cfg.IsShowMsg && !string.IsNullOrWhiteSpace(cfg.MsgText) ? cfg.MsgText : $"{name}時間到",
+                IsDarkTheme = this.IsDarkTheme,
+                MyAlarmCfg = cfg,
+                SnoozeMinutes = SnoozeMinutes
+            };
+
+            msgWindow.ShowDialog();
+
+            if (msgWindow.SnoozeRequested && alarmItems.Count < MaxAlarms) {
+                var snoozed = cfg.Clone();
+                snoozed.SetTarget(DateTime.Now.AddMinutes(SnoozeMinutes));
+                AddAlarm(snoozed);
             }
         }
+
+        #endregion
 
         private void btnMinimize_Click(object sender, RoutedEventArgs e)
         {

@@ -6,6 +6,7 @@
     xmlns:local="clr-namespace:WinClock"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Title="鬧鐘設定"
+    AutomationProperties.AutomationId="AlarmSetup_Window"
     Width="330"
     AllowsTransparency="True"
     Background="Transparent"
@@ -310,6 +311,8 @@
 
                 <Button
                     x:Name="btnHeaderClose"
+                    AutomationProperties.AutomationId="AlarmSetup_HeaderCloseButton"
+                    AutomationProperties.Name="關閉"
                     HorizontalAlignment="Right"
                     Click="btnCancel_Click"
                     Style="{StaticResource IconButtonStyle}">
@@ -340,6 +343,7 @@
                         Text="日期：" />
                     <DatePicker
                         x:Name="AlarmDatePicker"
+                        AutomationProperties.AutomationId="AlarmSetup_DatePicker"
                         Grid.Column="1"
                         SelectedDate="{Binding MyAlarmCfg.AlarmDate, Mode=TwoWay}" />
                 </Grid>
@@ -358,6 +362,7 @@
                     <StackPanel Grid.Column="1" Orientation="Horizontal">
                         <ComboBox
                             x:Name="cmbHour"
+                            AutomationProperties.AutomationId="AlarmSetup_HourComboBox"
                             Width="70"
                             IsEditable="True"
                             SelectedValue="{Binding MyAlarmCfg.Hour, Mode=TwoWay}" />
@@ -368,6 +373,7 @@
                             Text="：" />
                         <ComboBox
                             x:Name="cmbMinute"
+                            AutomationProperties.AutomationId="AlarmSetup_MinuteComboBox"
                             Width="70"
                             IsEditable="True"
                             SelectedValue="{Binding MyAlarmCfg.Minute, Mode=TwoWay}" />
@@ -383,11 +389,13 @@
                     </Grid.ColumnDefinitions>
                     <CheckBox
                         x:Name="chkPlaySound"
+                        AutomationProperties.AutomationId="AlarmSetup_PlaySoundCheckBox"
                         Grid.Column="0"
                         Content="播放音效"
                         IsChecked="{Binding MyAlarmCfg.IsPlaySound, Mode=TwoWay}" />
                     <ComboBox
                         x:Name="cmbSound"
+                        AutomationProperties.AutomationId="AlarmSetup_SoundComboBox"
                         Grid.Column="1"
                         Margin="6,0,0,0"
                         IsEditable="False"
@@ -395,6 +403,8 @@
                         SelectedValue="{Binding MyAlarmCfg.SoundName, Mode=TwoWay}" />
                         <Button
                             x:Name="btnPlay"
+                            AutomationProperties.AutomationId="AlarmSetup_PlayButton"
+                            AutomationProperties.Name="試聽"
                             Grid.Column="2"
                             Width="28"
                             Height="28"
@@ -422,6 +432,8 @@
                         </Button>
                         <Button
                             x:Name="btnStop"
+                            AutomationProperties.AutomationId="AlarmSetup_StopButton"
+                            AutomationProperties.Name="停止試聽"
                             Grid.Column="2"
                             Width="28"
                             Height="28"
@@ -453,10 +465,12 @@
                 <StackPanel Orientation="Vertical">
                     <CheckBox
                         x:Name="chkShowMsg"
+                        AutomationProperties.AutomationId="AlarmSetup_ShowMsgCheckBox"
                         Content="顯示文字"
                         IsChecked="{Binding MyAlarmCfg.IsShowMsg, Mode=TwoWay}" />
                     <TextBox
                         x:Name="txtMsg"
+                        AutomationProperties.AutomationId="AlarmSetup_MessageTextBox"
                         Margin="0,6,0,0"
                         IsEnabled="{Binding ElementName=chkShowMsg, Path=IsChecked}"
                         Text="{Binding MyAlarmCfg.MsgText, Mode=TwoWay}" />
@@ -481,6 +495,7 @@
                 <!--  清除鬧鐘  -->
                 <Button
                     x:Name="btnRemove"
+                    AutomationProperties.AutomationId="AlarmSetup_RemoveButton"
                     Grid.Column="0"
                     Width="76"
                     Background="#33EF4444"
@@ -506,6 +521,8 @@
                 <!--  取消與確定  -->
                 <Button
                     x:Name="btnCancel"
+                    AutomationProperties.AutomationId="AlarmSetup_CancelButton"
+                    IsCancel="True"
                     Grid.Column="2"
                     Width="60"
                     Click="btnCancel_Click"
@@ -514,6 +531,7 @@
 
                 <Button
                     x:Name="btnOK"
+                    AutomationProperties.AutomationId="AlarmSetup_OkButton"
                     Grid.Column="4"
                     Width="60"
                     Background="{DynamicResource AccentBrush}"
