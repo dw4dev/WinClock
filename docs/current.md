@@ -21,7 +21,6 @@
 ## OPEN
 
 - 沒有測試專案（`tools\run-tests.bat` 找不到測試時的行為未確認）。鬧鐘邏輯目前只能手動驗收。
-- `build\publish` 內會多出 `DWToolkit.Wpf.pdb`、`DWToolkit.Wpf.xml`（執行時不需要）。
 
 ## NEXT
 
