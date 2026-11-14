@@ -9,6 +9,8 @@
    優先權高於 MEMORY / 任何記憶 / current.md / 其他文件。
 2. **`docs/current.md`** — 目前狀態（版本、進度表、鐵則、NEXT、OPEN、REF）。僅為索引，不含
    階段細節；細節在對應 `docs/phases/vX.Y/phase-0Xx.md` 的「Outcome」段。
+   **本專案尚未建立 `docs/current.md` 與 `docs/phases/`**：檔案不存在時略過這一項；
+   開始第一個有規格的版本時，依 `docs/AI_Rules.md`「current.md」段建立。
 
 任何實際動工（讀碼、改碼、規劃）前，先用 Read 工具讀取以上兩份檔案的**當前內容**——本檔只負責
 「提醒讀」，不覆述、不快取兩者內容，避免與正本不同步。

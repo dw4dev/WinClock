@@ -85,6 +85,8 @@
 
 ### 2.4 參考實作
 
+- **共用框架 `DWToolkit.Wpf`**（平行資料夾 `..\DWToolkit`）：附加屬性 `dw:WindowPersistence.Key` 或基底 `WindowBase`，
+  已實作 2.2 與 2.3。引用方式見 `..\DWToolkit\docs\kb\referencing.md`。新視窗優先用它。
 - `Solomon_Midas/src/SolomonMidas.UI/Views/WindowBase.cs`（位置／尺寸／最大化記憶、螢幕範圍檢查、失敗降級）。
 
 ### 2.5 自審
