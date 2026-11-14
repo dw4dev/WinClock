@@ -36,6 +36,14 @@
 - Only process user-provided error snippets.
 - Prevent log inflation in context.
 
+### Build & test scripts (2026-11-14, user directive)
+
+- Every project keeps one-click scripts in `tools\`, each a `.bat` wrapper + `.ps1` pair: `build.bat` / `build.ps1` (compile only) and `run-tests.bat` / `run-tests.ps1` (tests only). Build and test stay separate scripts.
+- Existing equivalents under other names (`build-debug.*`, `test.*`) count; do not rename them. New projects use the names above.
+- Create the scripts in the same phase that creates the first solution. When projects or solutions are added, renamed, or moved, keep the scripts working in the same turn.
+- On hand-off, name the script to run (e.g. "run `tools\build.bat`, then `tools\run-tests.bat`"), not raw `dotnet` commands.
+- Conventions and the generic copy-ready scripts: `docs/kb/00-build-scripts.md`.
+
 ## Context
 
 Load (general): current.md > ADR > KB > requested files
