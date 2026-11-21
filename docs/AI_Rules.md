@@ -119,6 +119,41 @@ Completed-phase detail must NOT accumulate in current.md. Relocate first, then k
 
 Never delete a detail from current.md unless its durable content already has a permanent home above. Slimming without relocating = data loss (the root cause of past forgetting).
 
+## Spec Status (2026-10-10, user directive; added to WinClock 2026-11-21)
+
+Each version spec under `docs/specs/` carries one `Status`, moving forward only: **Draft → Approved → 持續 → 關閉**.
+
+| Status | Meaning | Trigger |
+|:--|:--|:--|
+| Draft | Interview in progress | Spec created |
+| Approved | User confirmed; phases may be decomposed; version not opened | User confirms consensus |
+| 持續 | Version open; keeps receiving changes (main line in the spec; from the maintenance start point, changes go to `vX.Y-maintenance.md`, see "Maintenance") | Version opened |
+| 關閉 | Frozen: no new FR, sub-case, or addition (the maintenance file closes with it) | Next version opened |
+
+- Opening a new version = ONE first commit: bump the minor version in `version.json` (NBGV), set the new spec to 持續, set the previous spec to 關閉. Requires the user's explicit instruction.
+- Open work in a spec about to close, including open maintenance rows (⬜／🔄), moves to the new spec before or in that commit. Only typo/link fixes go into a 關閉 spec.
+- Only one spec may be 持續 at a time.
+- v1.0 has no spec. Its work units are the current.md progress rows; its design lives in `docs/kb/` (e.g. `kb/alarms.md`).
+
+## Maintenance (2026-11-21, user directive)
+
+**Start point**: every phase (for v1.0: every progress row) of version vX.Y is done, its tests passed, and it is merged into `main`. Before the start point this section does not apply. At the start point, create `docs/specs/vX.Y-maintenance.md` and point current.md to it. v1.0 entered maintenance on 2026-11-21 (user decision).
+
+- **Version**: stays vX.Y.x; never bump the minor number in maintenance. The patch number comes from Nerdbank.GitVersioning (NBGV); never edit `version.json` by hand.
+- **Record**: every maintenance change goes to `docs/specs/vX.Y-maintenance.md` only, one row per item: `M-NNN` (from M-001, never reused) | date | type (錯誤／調整／功能異動) | content | affected spec section (v1.0: the KB doc section, e.g. `kb/alarms.md` §7) | status (⬜ 待處理／🔄 進行中／✅ 完成／⏭️ 移到下一版／❌ 不做) | commit.
+- **Spec and phase docs**: the spec stays 持續 but gets no new content (typo/link fixes only). Completed phase docs are history; never edit them. On conflict, the newer maintenance row wins over the spec and the KB design doc.
+- **Small functional changes go straight into vX.Y.x.** No minor bump needed.
+- **Minor-version suggestion**: when an item adds a new FR or a new window/tool, changes a file format (`alarms.json`, window state, other settings) incompatibly, needs a new ADR, or is too big for one session, propose moving it to vX.(Y+1) (a Draft spec). The user decides; until then, keep it ⬜.
+- **Workflow**: one item = one branch `maint/M-NNN-<slug>` = one session: implement → hand off `tools\build.bat` (and `tools\run-tests.bat` once a test project exists) plus the manual acceptance items per "Build Control" → set the row ✅ with the commit → merge into `main` → delete the branch (see "Git / Commit").
+- **current.md** in maintenance: NEXT points to the open rows of the maintenance file; never copy the rows into current.md.
+- **Next version**: the opening commit moves every open row (⬜／🔄) to the new spec and closes the maintenance file (see "Spec Status").
+
+## Release Tag (2026-11-21, user directive)
+
+- At the wrap-up of a version's last phase test step (all phases done, tests passed, merged into `main`), ask the user whether to create a release tag. Never create one without a yes.
+- Tag the merge commit on `main` with `nbgv tag` (name `vX.Y.<height>`, matching the build version). Push the tag only when the user says so.
+- In maintenance, ask again only when the user plans a release build (`tools\release.bat`) of the maintenance line.
+
 ## Resume
 
 Load: current.md > REF

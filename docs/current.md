@@ -4,7 +4,7 @@
 
 ## STATE
 
-- 版本：`version.json` 1.0（nbgv）；`net10.0-windows`（2026-11-14 從 net8 升級）；單一專案 `src/WinClock.csproj`。
+- 版本：`version.json` 1.0（nbgv）；維護階段 2026-11-21 起，版號 1.0.x，紀錄 `specs/v1.0-maintenance.md`（規則見 AI_Rules〈Maintenance〉）；`net10.0-windows`（2026-11-14 從 net8 升級）；單一專案 `src/WinClock.csproj`。
 - 腳本（`tools\`）：`build.bat` 只編譯，輸出到 `build\<組態>\`（預設 `build\Debug\WinClock.exe`）；`release.bat` 發佈單一檔案到 `build\publish`，保留該資料夾根層的 `*.json`（使用者狀態）；`run-tests.bat` 執行測試。
 - 共用框架：引用 `..\DWToolkit\dist\DWToolkit.Wpf.props`（DWToolkit 與 WinClock 平行放置）。
 
@@ -24,7 +24,8 @@
 
 ## NEXT
 
-1. 從 `kb/alarms.md` §7 後續候選中挑選下一項。
+1. 從 `specs/v1.0-maintenance.md` 挑 ⬜ 項目，一個項目一個 session（分支 `maint/M-NNN-<slug>`）。
+2. 使用者從 `kb/alarms.md` §7 後續候選挑選的項目，先登記成 M 列再動工；符合次版號建議條件時，向使用者建議改排進 v1.1。
 
 ## REF
 
