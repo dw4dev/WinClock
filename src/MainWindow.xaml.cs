@@ -78,6 +78,7 @@ namespace WinClock
             Settings = SettingsStore.Load();
             Topmost = Settings.General.Topmost;
             ApplyTheme();
+            ApplyFonts();
             Microsoft.Win32.SystemEvents.UserPreferenceChanged += SystemEvents_UserPreferenceChanged;
             Closed += (s, e) => Microsoft.Win32.SystemEvents.UserPreferenceChanged -= SystemEvents_UserPreferenceChanged;
             LoadAlarms();    // 還原上次關閉時尚未到時間的鬧鐘
@@ -260,7 +261,7 @@ namespace WinClock
 
         private void UpdateFontSizes()
         {
-            double scale = this.Width / BASE_WIDTH;
+            double scale = this.Width / BASE_WIDTH * Settings.Appearance.FontScale / 100.0;
             TimeText.FontSize = TIME_FONT_SIZE * scale;
             DateText.FontSize = DATE_FONT_SIZE * scale;
             LunarDateText.FontSize = LUNAR_FONT_SIZE * scale;
@@ -595,6 +596,23 @@ namespace WinClock
             Settings = settings;
             ApplyTopmost(settings.General.Topmost);
             ApplyTheme();
+            ApplyFonts();
+        }
+
+        /// <summary>
+        /// 套用字型、粗細與縮放比例（Phase-11f）。字型家族為「數字字型, 中文字型」：
+        /// 數字字型沒有的字元（中文）由中文字型補上。沒安裝的字型退回預設字型。
+        /// </summary>
+        private void ApplyFonts()
+        {
+            var appearance = Settings.Appearance;
+            var defaults = new AppearanceSettings();
+            var digit = FontCatalog.ResolveFamily(appearance.DigitFont.Family, defaults.DigitFont.Family);
+            var chinese = FontCatalog.ResolveFamily(appearance.ChineseFont.Family, defaults.ChineseFont.Family);
+            this.Resources["ClockFontFamily"] = new FontFamily($"{digit}, {chinese}");
+            this.Resources["DigitFontWeight"] = FontCatalog.ToWeight(appearance.DigitFont.Weight);
+            this.Resources["ChineseFontWeight"] = FontCatalog.ToWeight(appearance.ChineseFont.Weight);
+            UpdateFontSizes();
         }
 
         private void ApplyTopmost(bool topmost)

@@ -179,6 +179,9 @@
         <!--  生效中鬧鐘按鈕的底色 (將在後台依主題更新)  -->
         <SolidColorBrush x:Key="ActiveAlarmBackground" Color="#40EF4444" />
 
+        <!--  字型 (將在後台依設定更新，Phase-11f)：數字字型在前，中文字元由後面的中文字型補上  -->
+        <!--  ClockFontFamily、DigitFontWeight、ChineseFontWeight 由 MainWindow.ApplyFonts 設定  -->
+
         <!--  鬧鐘按鈕與「+」按鈕：比一般工具列按鈕窄，最小寬度 330 時放得下 5 個鬧鐘  -->
         <Style
             x:Key="AlarmButtonStyle"
@@ -356,9 +359,10 @@
                     Margin="0,0,0,4"
                     HorizontalAlignment="Left"
                     d:Text="2024/02/10 (九)"
-                    FontFamily="Segoe UI, Microsoft JhengHei UI"
+                    FontFamily="{DynamicResource ClockFontFamily}"
                     FontSize="32"
-                    FontWeight="Bold"
+                    FontWeight="{DynamicResource ChineseFontWeight}"
+                    Typography.NumeralAlignment="Tabular"
                     Foreground="{DynamicResource TextPrimary}" />
 
                 <!--  農曆與節氣  -->
@@ -370,7 +374,7 @@
                         x:Name="LunarDateText"
                         VerticalAlignment="Center"
                         d:Text="農曆 臘月初六"
-                        FontFamily="Segoe UI, Microsoft JhengHei UI"
+                        FontFamily="{DynamicResource ClockFontFamily}"
                         FontSize="16"
                         FontWeight="Normal"
                         Foreground="{DynamicResource TextSecondary}" />
@@ -387,9 +391,9 @@
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center"
                             d:Text="立春"
-                            FontFamily="Segoe UI, Microsoft JhengHei UI"
+                            FontFamily="{DynamicResource ClockFontFamily}"
                             FontSize="16"
-                            FontWeight="Bold"
+                            FontWeight="{DynamicResource ChineseFontWeight}"
                             Foreground="#34D399" />
                     </Border>
                 </StackPanel>
@@ -401,9 +405,10 @@
                     Margin="0,-10,0,0"
                     HorizontalAlignment="Center"
                     d:Text="02:10:06"
-                    FontFamily="Segoe UI, Microsoft JhengHei UI"
+                    FontFamily="{DynamicResource ClockFontFamily}"
                     FontSize="64"
-                    FontWeight="Bold"
+                    FontWeight="{DynamicResource DigitFontWeight}"
+                    Typography.NumeralAlignment="Tabular"
                     Foreground="{DynamicResource TextPrimary}" />
             </StackPanel>
 
@@ -414,7 +419,7 @@
                 Margin="10,0,0,5"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Bottom"
-                FontFamily="Segoe UI, Microsoft JhengHei UI"
+                FontFamily="{DynamicResource ClockFontFamily}"
                 FontSize="10"
                 Foreground="{DynamicResource TextSecondary}"
                 Opacity="0.8" />
