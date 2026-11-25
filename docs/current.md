@@ -4,28 +4,32 @@
 
 ## STATE
 
-- 版本：`version.json` 1.0（nbgv）；維護階段 2026-11-21 起，版號 1.0.x，紀錄 `specs/v1.0-maintenance.md`（規則見 AI_Rules〈Maintenance〉）；`net10.0-windows`（2026-11-14 從 net8 升級）；單一專案 `src/WinClock.csproj`。
+- 版本：`version.json` 1.1（nbgv）；2026-11-25 開啟 v1.1，規格 `specs/v1.1.md`（持續）；v1.0 維護檔 `specs/v1.0-maintenance.md` 已關閉。`net10.0-windows`；單一專案 `src/WinClock.csproj`。
 - 腳本（`tools\`）：`build.bat` 只編譯，輸出到 `build\<組態>\`（預設 `build\Debug\WinClock.exe`）；`release.bat` 發佈單一檔案到 `build\publish`，保留該資料夾根層的 `*.json`（使用者狀態）；`run-tests.bat` 執行測試。
 - 共用框架：引用 `..\DWToolkit\dist\DWToolkit.Wpf.props`（DWToolkit 與 WinClock 平行放置）。
 
-## 進度
+## 進度（v1.1 設定功能）
 
-| 項目 | 內容 | 狀態 |
-|---|---|---|
-| DWToolkit 引用 | 主視窗位置／寬度持久化，主題與釘選走擴充狀態 | ✅ 2026-11-14 編譯 0 警告 0 錯誤、手動驗收通過 |
-| 動態鬧鐘 | 「+」新增，上限 5，按鈕提示，保存到 `alarms.json`，貪睡 5 分鐘 | ✅ 2026-11-14 編譯 0 警告 0 錯誤、手動驗收通過 |
-| 升級 .NET 10、腳本整理 | `net10.0-windows`；編譯輸出到 `build\<組態>`；`release.bat` 移到 `tools\` | ✅ 2026-11-14 |
+| Phase | 內容 | 依賴 | 狀態 |
+|---|---|---|---|
+| 11a | `settings.json` 模型與讀寫 | — | ⬜ |
+| 11b | 系統匣圖示與選單 | — | ⬜ |
+| 11c | 設定視窗骨架、即時預覽、齒輪按鈕 | 11a、11b | ⬜ |
+| 11d | 一般設定（開機啟動、最上層、時間格式） | 11b、11c | ⬜ |
+| 11e | 外觀：主題與顏色 | 11c | ⬜ |
+| 11f | 外觀：字型 | 11c | ⬜ |
+| 11g | 鬧鐘設定 | 11c | ⬜ |
 
-設計與行為：`kb/alarms.md`。
+Phase 文件：`phases/v1.1/phase-11x.md`。v1.0 設計：`kb/alarms.md`。
 
 ## OPEN
 
-- 沒有測試專案（`tools\run-tests.bat` 找不到測試時的行為未確認）。鬧鐘邏輯目前只能手動驗收。
+- 沒有測試專案（`tools\run-tests.bat` 找不到測試時的行為未確認）。
+- 11b 動工前要決定系統匣實作方式（ADR）。
 
 ## NEXT
 
-1. 從 `specs/v1.0-maintenance.md` 挑 ⬜ 項目，一個項目一個 session（分支 `maint/M-NNN-<slug>`）。
-2. 使用者從 `kb/alarms.md` §7 後續候選挑選的項目，先登記成 M 列再動工；符合次版號建議條件時，向使用者建議改排進 v1.1。
+1. Phase-11a（或與其無依賴的 11b）。一個 phase 一個分支、一個 session。
 
 ## REF
 
