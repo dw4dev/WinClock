@@ -6,6 +6,8 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
+    <!-- 系統匣圖示用 WinForms NotifyIcon（ADR-0002）。 -->
+    <UseWindowsForms>true</UseWindowsForms>
     <ApplicationIcon>Images\WinClock.ico</ApplicationIcon>
     <!-- 編譯輸出到 repo 根目錄的 build\<組態>\（例：build\Debug\WinClock.exe）；發佈另由 tools\release.bat 輸出到 build\publish。 -->
     <OutputPath>$(MSBuildThisFileDirectory)..\build\$(Configuration)\</OutputPath>
@@ -17,6 +19,12 @@
     DWToolkit 與 WinClock 平行放置；編譯 WinClock 前，先執行 ..\DWToolkit\tools\build.bat 產生 dist。
   -->
   <Import Project="..\..\DWToolkit\dist\DWToolkit.Wpf.props" />
+
+  <!-- WinForms 的隱含 using 會和 WPF 型別（Application、Brush、Color…）衝突，只在 TrayIcon.cs 明確 using。 -->
+  <ItemGroup>
+    <Using Remove="System.Windows.Forms" />
+    <Using Remove="System.Drawing" />
+  </ItemGroup>
 
   <ItemGroup>
     <None Remove="Images\alarm.png" />
