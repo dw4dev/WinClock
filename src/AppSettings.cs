@@ -187,13 +187,18 @@ namespace WinClock
         /// <summary>音量 0–100。</summary>
         public int Volume { get; set; } = 100;
 
+        public const int MinSnoozeMinutes = 1;
+        public const int MaxSnoozeMinutes = 60;
+
+        /// <summary>貪睡分鐘數 1–60。</summary>
         public int SnoozeMinutes { get; set; } = 5;
 
         internal void Normalize()
         {
             if (DefaultSound is not null && !SG.AlarmSounds.ContainsKey(DefaultSound)) DefaultSound = null;
             Volume = Math.Clamp(Volume, 0, 100);
-            if (SnoozeMinutes < 1) SnoozeMinutes = 5;
+            if (SnoozeMinutes < MinSnoozeMinutes) SnoozeMinutes = 5;
+            SnoozeMinutes = Math.Min(SnoozeMinutes, MaxSnoozeMinutes);
         }
     }
 }

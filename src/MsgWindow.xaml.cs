@@ -1,5 +1,3 @@
-using NAudio.Wave;
-using System.IO;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
@@ -15,8 +13,10 @@ namespace WinClock
     /// </summary>
     public partial class MsgWindow : Window
     {
-        private WaveOutEvent? waveOutEvent;
-        private Mp3FileReader? mp3FileReader;
+        private readonly AlarmPlayer player = new();
+
+        /// <summary>鈴聲音量 0–100（設定「鬧鐘」類別）。</summary>
+        public int Volume { get; set; } = 100;
 
         public bool IsPlaying
         {
@@ -133,6 +133,8 @@ namespace WinClock
         public MsgWindow()
         {
             InitializeComponent();
+            player.Stopped += (s, e) => IsPlaying = false;
+            Closed += (s, e) => player.Dispose();
             ApplyTheme(IsDarkTheme);
         }
 
@@ -184,33 +186,11 @@ namespace WinClock
             }
 
             if (MyAlarmCfg is not null && MyAlarmCfg.IsPlaySound && !string.IsNullOrEmpty(MyAlarmCfg.SoundName)) {
-                IsPlaying = true;
-                var fld = AppContext.BaseDirectory;
-                var mp3 = Path.Combine(fld, SG.AlarmSounds[MyAlarmCfg.SoundName]);
-                mp3FileReader = new Mp3FileReader(mp3);
-                waveOutEvent = new WaveOutEvent();
-                waveOutEvent.PlaybackStopped += WaveOutEvent_PlaybackStopped;
-                waveOutEvent.Init(mp3FileReader);
-                waveOutEvent.Play();
+                player.Play(MyAlarmCfg.SoundName, Volume);
+                IsPlaying = player.IsPlaying;
             }
         }
 
-        private void WaveOutEvent_PlaybackStopped(object? sender, StoppedEventArgs e)
-        {
-            StopPlayback();
-        }
-
-        private void StopPlayback()
-        {
-            if (waveOutEvent != null) {
-                IsPlaying = false;
-                waveOutEvent.PlaybackStopped -= WaveOutEvent_PlaybackStopped;
-                waveOutEvent.Stop();
-                waveOutEvent.Dispose();
-                waveOutEvent = null;
-                mp3FileReader?.Dispose();
-                mp3FileReader = null;
-            }
-        }
+        private void StopPlayback() => player.Stop();
     }
 }

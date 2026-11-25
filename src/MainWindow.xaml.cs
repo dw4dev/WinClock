@@ -35,9 +35,6 @@ namespace WinClock
         /// <summary>鬧鐘數量上限。之後視情況開放。</summary>
         private const int MaxAlarms = 5;
 
-        /// <summary>貪睡的分鐘數。</summary>
-        private const int SnoozeMinutes = 5;
-
         /// <summary>
         /// 鬧鐘計時器的最長檢查間隔。計時器不直接等到鬧鐘時間：
         /// DispatcherTimer 的間隔上限約 24.8 天，而且電腦睡眠後間隔會不準，所以定期重新比對時間。
@@ -392,6 +389,11 @@ namespace WinClock
 
             var cfg = new AlarmCfg();
             cfg.AddMinutes(5);
+            // 預設鈴聲（Phase-11g）：預先選好並勾選播放鈴聲。
+            if (Settings.Alarm.DefaultSound is { } sound) {
+                cfg.SoundName = sound;
+                cfg.IsPlaySound = true;
+            }
 
             if (!ShowAlarmSetup(cfg, out var edited) || edited is null) return;
             if (alarmItems.Count >= MaxAlarms) return;
@@ -443,7 +445,8 @@ namespace WinClock
         {
             var alarmSetupWindow = new AlarmSetupWindow {
                 MyAlarmCfg = cfg,
-                IsDarkTheme = this.IsDarkTheme
+                IsDarkTheme = this.IsDarkTheme,
+                Volume = Settings.Alarm.Volume
             };
             alarmSetupWindow.Topmost = this.Topmost;
 
@@ -541,6 +544,7 @@ namespace WinClock
         {
             var cfg = item.Cfg;
             var name = item.DisplayName;
+            var snoozeMinutes = Settings.Alarm.SnoozeMinutes;
 
             cfg.IsEnabled = false;
             RemoveAlarm(item);
@@ -551,14 +555,15 @@ namespace WinClock
                 MessageText = cfg.IsShowMsg && !string.IsNullOrWhiteSpace(cfg.MsgText) ? cfg.MsgText : $"{name}時間到",
                 IsDarkTheme = this.IsDarkTheme,
                 MyAlarmCfg = cfg,
-                SnoozeMinutes = SnoozeMinutes
+                Volume = Settings.Alarm.Volume,
+                SnoozeMinutes = snoozeMinutes
             };
 
             msgWindow.ShowDialog();
 
             if (msgWindow.SnoozeRequested && alarmItems.Count < MaxAlarms) {
                 var snoozed = cfg.Clone();
-                snoozed.SetTarget(DateTime.Now.AddMinutes(SnoozeMinutes));
+                snoozed.SetTarget(DateTime.Now.AddMinutes(snoozeMinutes));
                 AddAlarm(snoozed);
             }
         }
