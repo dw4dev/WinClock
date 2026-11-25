@@ -1,0 +1,49 @@
+<UserControl
+    x:Class="WinClock.AppearanceSettingsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:WinClock"
+    AutomationProperties.AutomationId="Settings_AppearancePage">
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="0,0,6,0">
+            <TextBlock Text="主題：" />
+            <StackPanel Margin="22,4,0,0" Orientation="Horizontal">
+                <RadioButton
+                    x:Name="ThemeLightRadio"
+                    AutomationProperties.AutomationId="Settings_ThemeLightRadioButton"
+                    Checked="ThemeRadio_Checked"
+                    Content="明亮"
+                    GroupName="ThemeMode" />
+                <RadioButton
+                    x:Name="ThemeDarkRadio"
+                    Margin="16,0,0,0"
+                    AutomationProperties.AutomationId="Settings_ThemeDarkRadioButton"
+                    Checked="ThemeRadio_Checked"
+                    Content="暗色"
+                    GroupName="ThemeMode" />
+                <RadioButton
+                    x:Name="ThemeFollowRadio"
+                    Margin="16,0,0,0"
+                    AutomationProperties.AutomationId="Settings_ThemeFollowWindowsRadioButton"
+                    Checked="ThemeRadio_Checked"
+                    Content="跟隨 Windows"
+                    GroupName="ThemeMode" />
+            </StackPanel>
+
+            <GroupBox
+                Margin="0,14,0,0"
+                Padding="8"
+                AutomationProperties.AutomationId="Settings_LightSchemeGroup"
+                Header="明亮">
+                <local:ColorSchemeEditor x:Name="LightEditor" />
+            </GroupBox>
+            <GroupBox
+                Margin="0,10,0,0"
+                Padding="8"
+                AutomationProperties.AutomationId="Settings_DarkSchemeGroup"
+                Header="暗色">
+                <local:ColorSchemeEditor x:Name="DarkEditor" />
+            </GroupBox>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

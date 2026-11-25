@@ -113,11 +113,15 @@ namespace WinClock
             if (!Enum.IsDefined(Theme)) Theme = AppThemeMode.Dark;
             ChineseFont ??= new AppearanceSettings().ChineseFont;
             DigitFont ??= new AppearanceSettings().DigitFont;
-            Light ??= new AppearanceSettings().Light;
-            Dark ??= new AppearanceSettings().Dark;
-            Light.Normalize();
-            Dark.Normalize();
+            var defaults = new AppearanceSettings();
+            Light ??= defaults.Light;
+            Dark ??= defaults.Dark;
+            Light.Normalize(defaults.Light);
+            Dark.Normalize(defaults.Dark);
         }
+
+        /// <summary>依明亮或暗色取得顏色設定。</summary>
+        public ColorScheme SchemeFor(bool isDark) => isDark ? Dark : Light;
     }
 
     /// <summary>字型與粗細。粗細用 WPF FontWeight 名稱（Normal、Bold……）。</summary>
@@ -145,11 +149,18 @@ namespace WinClock
         /// <summary>背景不透明度 0–1。</summary>
         public double Opacity { get; set; } = 1;
 
-        internal void Normalize()
+        /// <summary>數值拉回範圍內；格式不對的顏色換成 <paramref name="defaults"/> 的值。</summary>
+        internal void Normalize(ColorScheme defaults)
         {
+            Background = ValidColorOr(Background, defaults.Background);
+            Background2 = ValidColorOr(Background2, defaults.Background2);
+            Text = ValidColorOr(Text, defaults.Text);
             GradientAngle = double.IsFinite(GradientAngle) ? Math.Clamp(GradientAngle, 0, 360) : 0;
             Opacity = double.IsFinite(Opacity) ? Math.Clamp(Opacity, 0, 1) : 1;
         }
+
+        private static string ValidColorOr(string? value, string fallback) =>
+            ThemeBrushes.ParseColor(value) is { } color ? ThemeBrushes.FormatColor(color) : fallback;
     }
 
     public sealed class AlarmSettings

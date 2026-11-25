@@ -328,6 +328,8 @@
 
                     <Button
                         x:Name="btnThemeToggle"
+                        AutomationProperties.AutomationId="Main_ThemeButton"
+                        AutomationProperties.Name="切換主題"
                         Click="btnThemeToggle_Click"
                         DockPanel.Dock="Right"
                         Style="{StaticResource TitleBarButtonStyle}"
