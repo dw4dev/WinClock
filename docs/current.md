@@ -29,7 +29,7 @@ Phase 文件：`phases/v1.1/phase-11x.md`。v1.0 設計：`kb/alarms.md`。
 ## NEXT
 
 1. v1.1 進入維護（2026-11-25）：未完成項目見 `specs/v1.1-maintenance.md`。
-2. Release tag：使用者尚未決定（AI_Rules「Release Tag」）。
+2. Release tag：`v1.1.23`（2026-11-25，含 M-001；尚未 push）。
 
 ## REF
 
