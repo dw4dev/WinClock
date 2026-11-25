@@ -90,6 +90,7 @@ namespace WinClock
 
             trayIcon = new TrayIcon(Title);
             trayIcon.ShowRequested += (s, e) => ShowFromTray();
+            trayIcon.SettingsRequested += (s, e) => OpenSettings();
             trayIcon.ExitRequested += (s, e) => Application.Current.Shutdown();
 
             timer.Start();
@@ -561,6 +562,40 @@ namespace WinClock
                 snoozed.SetTarget(DateTime.Now.AddMinutes(SnoozeMinutes));
                 AddAlarm(snoozed);
             }
+        }
+
+        #endregion
+
+        #region 設定視窗
+
+        /// <summary>開啟中的設定視窗（單一實例）。</summary>
+        private SettingsWindow? settingsWindow;
+
+        private void btnSettings_Click(object sender, RoutedEventArgs e) => OpenSettings();
+
+        /// <summary>開啟設定視窗；已開啟時切到前景。</summary>
+        private void OpenSettings()
+        {
+            if (settingsWindow is not null) {
+                if (settingsWindow.WindowState == WindowState.Minimized) settingsWindow.WindowState = WindowState.Normal;
+                settingsWindow.Activate();
+                return;
+            }
+
+            settingsWindow = new SettingsWindow(Settings, ApplySettings) { Topmost = Topmost };
+            settingsWindow.Closed += (s, e) => settingsWindow = null;
+            settingsWindow.Show();
+            settingsWindow.Activate();
+        }
+
+        /// <summary>
+        /// 套用設定（設定視窗的即時預覽、確定、還原都經過這裡）。
+        /// 目前只套用時間格式；最上層與主題由 Phase-11d／11e 接上，以免覆蓋工具列按鈕的狀態。
+        /// </summary>
+        private void ApplySettings(AppSettings settings)
+        {
+            Settings = settings;
+            UpdateTimeDisplay();
         }
 
         #endregion

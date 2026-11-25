@@ -1,0 +1,113 @@
+<Window
+    x:Class="WinClock.SettingsWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:dw="http://schemas.dwtoolkit/wpf"
+    Title="設定"
+    Width="560"
+    Height="420"
+    MinWidth="460"
+    MinHeight="320"
+    dw:WindowPersistence.Key="Settings"
+    AutomationProperties.AutomationId="Settings_Window"
+    ResizeMode="CanResize"
+    ShowInTaskbar="True"
+    WindowStartupLocation="CenterScreen">
+
+    <Grid Margin="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="140" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <!--  左側導覽  -->
+        <ListBox
+            x:Name="CategoryList"
+            Grid.Row="0"
+            Grid.Column="0"
+            AutomationProperties.AutomationId="Settings_CategoryList"
+            SelectionChanged="CategoryList_SelectionChanged">
+            <ListBoxItem
+                Padding="8,6"
+                AutomationProperties.AutomationId="Settings_GeneralCategoryItem"
+                Content="一般"
+                Tag="General" />
+            <ListBoxItem
+                Padding="8,6"
+                AutomationProperties.AutomationId="Settings_AppearanceCategoryItem"
+                Content="外觀"
+                Tag="Appearance" />
+            <ListBoxItem
+                Padding="8,6"
+                AutomationProperties.AutomationId="Settings_AlarmCategoryItem"
+                Content="鬧鐘"
+                Tag="Alarm" />
+        </ListBox>
+
+        <!--  右側內容（各類別由 Phase-11d～11g 填入）  -->
+        <Border
+            Grid.Row="0"
+            Grid.Column="1"
+            Margin="12,0,0,0"
+            Padding="12"
+            BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}"
+            BorderThickness="1">
+            <ContentControl x:Name="CategoryContent" AutomationProperties.AutomationId="Settings_CategoryContent">
+                <TextBlock
+                    x:Name="PlaceholderText"
+                    AutomationProperties.AutomationId="Settings_PlaceholderText"
+                    Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"
+                    TextWrapping="Wrap" />
+            </ContentControl>
+        </Border>
+
+        <!--  底部按鈕  -->
+        <DockPanel
+            Grid.Row="1"
+            Grid.Column="0"
+            Grid.ColumnSpan="2"
+            Margin="0,12,0,0"
+            LastChildFill="False">
+            <Button
+                x:Name="ResetCategoryButton"
+                MinWidth="90"
+                Padding="10,4"
+                AutomationProperties.AutomationId="Settings_ResetCategoryButton"
+                Click="ResetCategoryButton_Click"
+                Content="重設此類別"
+                DockPanel.Dock="Left" />
+            <Button
+                x:Name="ResetAllButton"
+                MinWidth="90"
+                Margin="8,0,0,0"
+                Padding="10,4"
+                AutomationProperties.AutomationId="Settings_ResetAllButton"
+                Click="ResetAllButton_Click"
+                Content="全部重設"
+                DockPanel.Dock="Left" />
+            <Button
+                x:Name="CancelButton"
+                MinWidth="80"
+                Margin="8,0,0,0"
+                Padding="10,4"
+                AutomationProperties.AutomationId="Settings_CancelButton"
+                Click="CancelButton_Click"
+                Content="取消"
+                DockPanel.Dock="Right"
+                IsCancel="True" />
+            <Button
+                x:Name="OkButton"
+                MinWidth="80"
+                Padding="10,4"
+                AutomationProperties.AutomationId="Settings_OkButton"
+                Click="OkButton_Click"
+                Content="確定"
+                DockPanel.Dock="Right"
+                IsDefault="True" />
+        </DockPanel>
+    </Grid>
+</Window>

@@ -20,6 +20,14 @@ namespace WinClock
         Tray
     }
 
+    /// <summary>設定類別（設定視窗左側導覽）。</summary>
+    public enum SettingsCategory
+    {
+        General,
+        Appearance,
+        Alarm
+    }
+
     /// <summary>
     /// 全部設定（settings.json 的內容）。每個欄位的預設值等於 v1.0 的行為。
     /// 讀寫見 <see cref="SettingsStore"/>。
@@ -36,6 +44,16 @@ namespace WinClock
         /// </summary>
         public AppSettings Clone() =>
             JsonSerializer.Deserialize<AppSettings>(JsonSerializer.Serialize(this, SettingsStore.JsonOptions), SettingsStore.JsonOptions)!;
+
+        /// <summary>把一個類別重設成預設值。</summary>
+        public void Reset(SettingsCategory category)
+        {
+            switch (category) {
+                case SettingsCategory.General: General = new(); break;
+                case SettingsCategory.Appearance: Appearance = new(); break;
+                case SettingsCategory.Alarm: Alarm = new(); break;
+            }
+        }
 
         /// <summary>
         /// 把 null 的類別換成預設值，把超出範圍的數值拉回範圍內。

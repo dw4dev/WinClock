@@ -17,6 +17,7 @@ namespace WinClock
         private readonly ContextMenu menu;
 
         public event EventHandler? ShowRequested;
+        public event EventHandler? SettingsRequested;
         public event EventHandler? ExitRequested;
 
         public TrayIcon(string toolTip)
@@ -24,10 +25,7 @@ namespace WinClock
             menu = new ContextMenu { Placement = PlacementMode.MousePoint };
             AutomationProperties.SetAutomationId(menu, "Tray_Menu");
             menu.Items.Add(CreateItem("Tray_ShowMenuItem", "顯示", () => ShowRequested?.Invoke(this, EventArgs.Empty)));
-            // 「設定」先保留項目，開啟設定視窗由 Phase-11c 接上。
-            var settingsItem = CreateItem("Tray_SettingsMenuItem", "設定", null);
-            settingsItem.IsEnabled = false;
-            menu.Items.Add(settingsItem);
+            menu.Items.Add(CreateItem("Tray_SettingsMenuItem", "設定", () => SettingsRequested?.Invoke(this, EventArgs.Empty)));
             menu.Items.Add(new Separator());
             menu.Items.Add(CreateItem("Tray_ExitMenuItem", "結束", () => ExitRequested?.Invoke(this, EventArgs.Empty)));
 
@@ -44,11 +42,11 @@ namespace WinClock
             };
         }
 
-        private static MenuItem CreateItem(string automationId, string header, Action? onClick)
+        private static MenuItem CreateItem(string automationId, string header, Action onClick)
         {
             var item = new MenuItem { Header = header };
             AutomationProperties.SetAutomationId(item, automationId);
-            if (onClick is not null) item.Click += (s, e) => onClick();
+            item.Click += (s, e) => onClick();
             return item;
         }
 
