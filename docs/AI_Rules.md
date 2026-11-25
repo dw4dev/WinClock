@@ -20,6 +20,12 @@
 - **Review all references first.** Read every referenced resource (`docs/specs/resources/vX.Y/`) before implementation. Request any missing references before proceeding.
 - **Act independently on mechanical details.** Apply standard conventions for product-neutral details (naming, formatting, imports). If the user delegates a decision for this session, state the assumption and continue.
 
+## Rule of Three (user directive)
+
+- **Before building any UI pattern, helper, or logic, search for similar code.** If it already exists twice, STOP: extract a shared component / method first, then use it (including replacing the existing copies, or log them for gradual replacement).
+- Applies to XAML snippets too (icon + tooltip, label + value rows, etc.), not only C#.
+- Say so in the turn it is found: name the 2 existing places and the proposed shared form, then proceed per the Interrogation Gate.
+
 # Runtime
 
 ## Output
