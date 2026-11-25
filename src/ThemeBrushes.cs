@@ -36,6 +36,12 @@ namespace WinClock
         public static Brush CreateText(ColorScheme scheme) =>
             Frozen(new SolidColorBrush(ParseColor(scheme.Text) ?? Colors.White));
 
+        /// <summary>農曆文字：勾選「與文字顏色一致」時用文字顏色，否則用自訂顏色。</summary>
+        public static Brush CreateLunarText(ColorScheme scheme) =>
+            scheme.LunarFollowText
+                ? CreateText(scheme)
+                : Frozen(new SolidColorBrush(ParseColor(scheme.LunarText) ?? Colors.Gray));
+
         private static Color WithAlpha(Color color, byte alpha) => Color.FromArgb(alpha, color.R, color.G, color.B);
 
         private static Brush Frozen(Brush brush)

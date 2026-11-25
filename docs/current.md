@@ -28,7 +28,8 @@ Phase 文件：`phases/v1.1/phase-11x.md`。v1.0 設計：`kb/alarms.md`。
 
 ## NEXT
 
-1. v1.1 所有 phase 完成。依 AI_Rules「Release Tag」詢問使用者是否建立 release tag；依「Maintenance」建立 `specs/v1.1-maintenance.md`。
+1. v1.1 進入維護（2026-11-25）：未完成項目見 `specs/v1.1-maintenance.md`。
+2. Release tag：使用者尚未決定（AI_Rules「Release Tag」）。
 
 ## REF
 
