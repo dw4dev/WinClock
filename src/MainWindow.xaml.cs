@@ -86,20 +86,59 @@ namespace WinClock
             timer.Tick += Timer_Tick;
 
             StateChanged += MainWindow_StateChanged;
+            IsVisibleChanged += MainWindow_IsVisibleChanged;
+
+            trayIcon = new TrayIcon(Title);
+            trayIcon.ShowRequested += (s, e) => ShowFromTray();
+            trayIcon.ExitRequested += (s, e) => Application.Current.Shutdown();
 
             timer.Start();
             UpdateTimeDisplay();
         }
 
+        private readonly TrayIcon trayIcon;
+
+        /// <summary>
+        /// 其他途徑最小化（例 Win+M）時，同樣縮到系統匣。
+        /// </summary>
         private void MainWindow_StateChanged(object? sender, EventArgs e)
         {
-            if (WindowState == WindowState.Minimized) {
-                timer.Stop();
-            }
-            else {
+            if (WindowState == WindowState.Minimized) HideToTray();
+        }
+
+        /// <summary>
+        /// 視窗隱藏時停止時間更新；鬧鐘用各自的計時器，照常響鈴。
+        /// </summary>
+        private void MainWindow_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (IsVisible) {
                 timer.Start();
                 UpdateTimeDisplay();
             }
+            else {
+                timer.Stop();
+            }
+        }
+
+        /// <summary>縮到系統匣：隱藏視窗，工作列不顯示。</summary>
+        private void HideToTray()
+        {
+            Hide();
+            // 還原成一般狀態，下次 Show() 直接顯示，不停在最小化。
+            WindowState = WindowState.Normal;
+        }
+
+        private void ShowFromTray()
+        {
+            Show();
+            if (WindowState == WindowState.Minimized) WindowState = WindowState.Normal;
+            Activate();
+        }
+
+        protected override void OnClosed(EventArgs e)
+        {
+            trayIcon.Dispose();
+            base.OnClosed(e);
         }
 
         private void Timer_Tick(object? sender, EventArgs e)
@@ -528,7 +567,7 @@ namespace WinClock
 
         private void btnMinimize_Click(object sender, RoutedEventArgs e)
         {
-            this.WindowState = WindowState.Minimized;
+            HideToTray();
         }
 
         private void ResizeThumb_DragDelta(object sender, System.Windows.Controls.Primitives.DragDeltaEventArgs e)

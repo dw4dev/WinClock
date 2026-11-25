@@ -295,10 +295,12 @@
 
                     <Button
                         x:Name="btnMinimize"
+                        AutomationProperties.AutomationId="Main_MinimizeButton"
+                        AutomationProperties.Name="縮到系統匣"
                         Click="btnMinimize_Click"
                         DockPanel.Dock="Right"
                         Style="{StaticResource TitleBarButtonStyle}"
-                        ToolTip="最小化視窗">
+                        ToolTip="縮到系統匣">
                         <Path
                             Width="10"
                             Height="10"
