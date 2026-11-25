@@ -47,6 +47,9 @@ namespace WinClock
         /// <summary>生效中的鬧鐘，順序就是工具列按鈕的順序。</summary>
         private readonly ObservableCollection<AlarmItem> alarmItems = [];
 
+        /// <summary>目前套用的設定（settings.json）。</summary>
+        public AppSettings Settings { get; private set; }
+
         public bool IsDarkTheme { get; private set; } = true;
         private Brush activePinBrush = Brushes.Transparent;
 
@@ -71,8 +74,11 @@ namespace WinClock
 
             AlarmButtons.ItemsSource = alarmItems;
 
-            ApplyTheme(true); // 預設使用深色磨砂主題
-            LoadAlarms();     // 還原上次關閉時尚未到時間的鬧鐘
+            // 先套用 settings.json；之後 DWToolkit 的視窗擴充狀態（上次的主題、釘選）仍會覆蓋，與 v1.0 相同。
+            Settings = SettingsStore.Load();
+            Topmost = Settings.General.Topmost;
+            ApplyTheme(IsDarkThemeFor(Settings.Appearance.Theme));
+            LoadAlarms();    // 還原上次關閉時尚未到時間的鬧鐘
 
             timer = new DispatcherTimer {
                 Interval = TimeSpan.FromSeconds(1)
@@ -162,10 +168,35 @@ namespace WinClock
 
                 DateText.Text = currentDate;
                 LunarDateText.Text = lunarDate;
-                TimeText.Text = now.ToString("HH:mm:ss");
+                TimeText.Text = now.ToString(TimeFormat, CultureInfo.InvariantCulture);
             }
             catch (Exception ex) {
                 Debug.WriteLine(ex.Message);
+            }
+        }
+
+        /// <summary>時間文字格式（依一般設定的 12／24 小時制與秒數）。</summary>
+        private string TimeFormat =>
+            (Settings.General.Use24Hour ? "HH" : "hh") + (Settings.General.ShowSeconds ? ":mm:ss" : ":mm");
+
+        /// <summary>
+        /// 主題模式換成深色與否。「跟隨 Windows」讀取目前的系統設定（切換時跟著變更在 Phase-11e）。
+        /// </summary>
+        private static bool IsDarkThemeFor(AppThemeMode mode) => mode switch {
+            AppThemeMode.Light => false,
+            AppThemeMode.FollowWindows => !IsWindowsAppsLightTheme(),
+            _ => true
+        };
+
+        private static bool IsWindowsAppsLightTheme()
+        {
+            try {
+                using var key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize");
+                return key?.GetValue("AppsUseLightTheme") is int value && value != 0;
+            }
+            catch (Exception ex) {
+                Debug.WriteLine($"讀取 Windows 主題失敗：{ex.Message}");
+                return false;
             }
         }
 
