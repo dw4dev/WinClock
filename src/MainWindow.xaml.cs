@@ -74,7 +74,8 @@ namespace WinClock
 
             AlarmButtons.ItemsSource = alarmItems;
 
-            // 先套用 settings.json；之後 DWToolkit 的視窗擴充狀態（上次的主題、釘選）仍會覆蓋，與 v1.0 相同。
+            // 先套用 settings.json；之後 DWToolkit 的視窗擴充狀態（上次的主題）仍會覆蓋，與 v1.0 相同。
+            // 最上層只以 settings.json 為準（Phase-11d）。
             Settings = SettingsStore.Load();
             Topmost = Settings.General.Topmost;
             ApplyTheme(IsDarkThemeFor(Settings.Appearance.Theme));
@@ -261,8 +262,7 @@ namespace WinClock
 
         private void btnPinTop_Click(object sender, RoutedEventArgs e)
         {
-            this.Topmost = !this.Topmost;
-            UpdateButtonVisuals();
+            SetTopmostFromPin(!Topmost);
         }
 
         private void btnThemeToggle_Click(object sender, RoutedEventArgs e)
@@ -350,23 +350,21 @@ namespace WinClock
             btnAddAlarm.Visibility = alarmItems.Count < MaxAlarms ? Visibility.Visible : Visibility.Collapsed;
         }
 
-        #region 視窗擴充狀態（DWToolkit：主題與釘選）
+        #region 視窗擴充狀態（DWToolkit：主題）
 
         /// <summary>
-        /// 視窗關閉時由 DWToolkit 呼叫：保存主題與釘選狀態。
+        /// 視窗關閉時由 DWToolkit 呼叫：保存主題。最上層改存 settings.json。
         /// </summary>
         public void CollectExtraState(WindowExtraState state)
         {
             state.Set("darkTheme", IsDarkTheme);
-            state.Set("topmost", Topmost);
         }
 
         /// <summary>
-        /// 視窗顯示前由 DWToolkit 呼叫（只在有上次紀錄時）：還原主題與釘選狀態。
+        /// 視窗顯示前由 DWToolkit 呼叫（只在有上次紀錄時）：還原主題。
         /// </summary>
         public void ApplyExtraState(WindowExtraState state)
         {
-            Topmost = state.GetBool("topmost", Topmost);
             ApplyTheme(state.GetBool("darkTheme", IsDarkTheme));
         }
 
@@ -590,12 +588,34 @@ namespace WinClock
 
         /// <summary>
         /// 套用設定（設定視窗的即時預覽、確定、還原都經過這裡）。
-        /// 目前只套用時間格式；最上層與主題由 Phase-11d／11e 接上，以免覆蓋工具列按鈕的狀態。
+        /// 套用最上層與時間格式；主題由 Phase-11e 接上。開機啟動只在「確定」時寫入登錄（見 SettingsWindow）。
         /// </summary>
         private void ApplySettings(AppSettings settings)
         {
             Settings = settings;
+            ApplyTopmost(settings.General.Topmost);
             UpdateTimeDisplay();
+        }
+
+        private void ApplyTopmost(bool topmost)
+        {
+            Topmost = topmost;
+            if (settingsWindow is not null) settingsWindow.Topmost = topmost;
+            UpdateButtonVisuals();
+        }
+
+        /// <summary>
+        /// 工具列釘選按鈕：立即套用並寫入 settings.json（只改這一欄，不提交設定視窗中尚未確定的修改）。
+        /// </summary>
+        private void SetTopmostFromPin(bool topmost)
+        {
+            Settings.General.Topmost = topmost;
+            settingsWindow?.SetTopmost(topmost);
+            ApplyTopmost(topmost);
+
+            var saved = SettingsStore.Load();
+            saved.General.Topmost = topmost;
+            SettingsStore.Save(saved);
         }
 
         #endregion

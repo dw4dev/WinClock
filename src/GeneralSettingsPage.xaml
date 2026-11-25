@@ -1,0 +1,63 @@
+<UserControl
+    x:Class="WinClock.GeneralSettingsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    AutomationProperties.AutomationId="Settings_GeneralPage">
+    <StackPanel>
+        <CheckBox
+            x:Name="AutoStartCheckBox"
+            AutomationProperties.AutomationId="Settings_AutoStartCheckBox"
+            Checked="Control_Changed"
+            Unchecked="Control_Changed"
+            Content="開機時自動啟動" />
+        <StackPanel Margin="22,6,0,0" IsEnabled="{Binding IsChecked, ElementName=AutoStartCheckBox}">
+            <TextBlock Text="開機啟動時：" />
+            <RadioButton
+                x:Name="StartupShowRadio"
+                Margin="0,4,0,0"
+                AutomationProperties.AutomationId="Settings_StartupShowRadioButton"
+                Checked="Control_Changed"
+                Content="顯示視窗"
+                GroupName="StartupState" />
+            <RadioButton
+                x:Name="StartupTrayRadio"
+                Margin="0,4,0,0"
+                AutomationProperties.AutomationId="Settings_StartupTrayRadioButton"
+                Checked="Control_Changed"
+                Content="縮到系統匣"
+                GroupName="StartupState" />
+        </StackPanel>
+
+        <CheckBox
+            x:Name="TopmostCheckBox"
+            Margin="0,14,0,0"
+            AutomationProperties.AutomationId="Settings_TopmostCheckBox"
+            Checked="Control_Changed"
+            Unchecked="Control_Changed"
+            Content="永遠在最上層" />
+
+        <TextBlock Margin="0,14,0,0" Text="時間格式：" />
+        <StackPanel Margin="22,4,0,0" Orientation="Horizontal">
+            <RadioButton
+                x:Name="Use24HourRadio"
+                AutomationProperties.AutomationId="Settings_Use24HourRadioButton"
+                Checked="Control_Changed"
+                Content="24 小時制"
+                GroupName="HourFormat" />
+            <RadioButton
+                x:Name="Use12HourRadio"
+                Margin="16,0,0,0"
+                AutomationProperties.AutomationId="Settings_Use12HourRadioButton"
+                Checked="Control_Changed"
+                Content="12 小時制"
+                GroupName="HourFormat" />
+        </StackPanel>
+        <CheckBox
+            x:Name="ShowSecondsCheckBox"
+            Margin="22,6,0,0"
+            AutomationProperties.AutomationId="Settings_ShowSecondsCheckBox"
+            Checked="Control_Changed"
+            Unchecked="Control_Changed"
+            Content="顯示秒數" />
+    </StackPanel>
+</UserControl>
