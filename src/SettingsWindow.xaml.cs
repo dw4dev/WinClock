@@ -20,6 +20,7 @@ namespace WinClock
 
         private readonly AppSettings original;
         private readonly GeneralSettingsPage generalPage = new();
+        private readonly AppearanceSettingsPage appearancePage = new();
         private readonly Action<AppSettings> previewApply;
         private bool committed;
 
@@ -33,6 +34,7 @@ namespace WinClock
             Working = current.Clone();
             this.previewApply = previewApply;
             generalPage.Changed += (s, e) => OnSettingsChanged();
+            appearancePage.Changed += (s, e) => OnSettingsChanged();
             SelectCategory(SettingsCategory.General);
         }
 
@@ -57,16 +59,33 @@ namespace WinClock
             ShowCategory(CurrentCategory);
         }
 
-        /// <summary>顯示類別內容（外觀、鬧鐘由 Phase-11e～11g 填入）。</summary>
+        /// <summary>顯示類別內容（鬧鐘由 Phase-11g 填入）。</summary>
         private void ShowCategory(SettingsCategory category)
         {
-            if (category == SettingsCategory.General) {
-                generalPage.Load(Working.General);
-                CategoryContent.Content = generalPage;
-                return;
+            switch (category) {
+                case SettingsCategory.General:
+                    generalPage.Load(Working.General);
+                    CategoryContent.Content = generalPage;
+                    break;
+                case SettingsCategory.Appearance:
+                    appearancePage.Load(Working.Appearance);
+                    CategoryContent.Content = appearancePage;
+                    break;
+                default:
+                    PlaceholderText.Text = "鬧鐘設定（尚未提供）";
+                    CategoryContent.Content = PlaceholderText;
+                    break;
             }
-            PlaceholderText.Text = category == SettingsCategory.Appearance ? "外觀設定（尚未提供）" : "鬧鐘設定（尚未提供）";
-            CategoryContent.Content = PlaceholderText;
+        }
+
+        /// <summary>
+        /// 工具列主題按鈕已直接改變並保存主題模式：同步到原始設定與副本，取消時不還原。
+        /// </summary>
+        public void SetTheme(AppThemeMode mode)
+        {
+            original.Appearance.Theme = mode;
+            Working.Appearance.Theme = mode;
+            appearancePage.SetTheme(mode);
         }
 
         /// <summary>

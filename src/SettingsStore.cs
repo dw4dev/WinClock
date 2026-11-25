@@ -53,6 +53,17 @@ namespace WinClock
         }
 
         /// <summary>
+        /// 讀取檔案、只改 <paramref name="change"/> 指定的欄位後寫回。
+        /// 主視窗工具列按鈕用它保存單一欄位，不提交設定視窗中尚未確定的修改。
+        /// </summary>
+        public static void Update(Action<AppSettings> change)
+        {
+            var saved = Load();
+            change(saved);
+            Save(saved);
+        }
+
+        /// <summary>
         /// 寫入設定（整份覆寫）。
         /// </summary>
         public static void Save(AppSettings settings)

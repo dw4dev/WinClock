@@ -19,10 +19,10 @@ namespace WinClock
     /// Interaction logic for MainWindow.xaml
     /// <para>
     /// 視窗位置與寬度由 DWToolkit 記住（XAML 的 dw:WindowPersistence.Key="Main"）。
-    /// 主題與釘選狀態透過 <see cref="IWindowExtraStateOwner"/> 存在同一份紀錄。
+    /// 主題與最上層存在 settings.json（Phase-11d、11e）。
     /// </para>
     /// </summary>
-    public partial class MainWindow : Window, IWindowExtraStateOwner
+    public partial class MainWindow : Window
     {
         private readonly DispatcherTimer timer;
         private string nowDate = "", lunarDate = "";
@@ -74,11 +74,12 @@ namespace WinClock
 
             AlarmButtons.ItemsSource = alarmItems;
 
-            // 先套用 settings.json；之後 DWToolkit 的視窗擴充狀態（上次的主題）仍會覆蓋，與 v1.0 相同。
-            // 最上層只以 settings.json 為準（Phase-11d）。
+            // 最上層與主題只以 settings.json 為準（Phase-11d、11e）。
             Settings = SettingsStore.Load();
             Topmost = Settings.General.Topmost;
-            ApplyTheme(IsDarkThemeFor(Settings.Appearance.Theme));
+            ApplyTheme();
+            Microsoft.Win32.SystemEvents.UserPreferenceChanged += SystemEvents_UserPreferenceChanged;
+            Closed += (s, e) => Microsoft.Win32.SystemEvents.UserPreferenceChanged -= SystemEvents_UserPreferenceChanged;
             LoadAlarms();    // 還原上次關閉時尚未到時間的鬧鐘
 
             timer = new DispatcherTimer {
@@ -221,7 +222,7 @@ namespace WinClock
             (Settings.General.Use24Hour ? "HH" : "hh") + (Settings.General.ShowSeconds ? ":mm:ss" : ":mm");
 
         /// <summary>
-        /// 主題模式換成深色與否。「跟隨 Windows」讀取目前的系統設定（切換時跟著變更在 Phase-11e）。
+        /// 主題模式換成深色與否。「跟隨 Windows」讀取目前的系統設定。
         /// </summary>
         private static bool IsDarkThemeFor(AppThemeMode mode) => mode switch {
             AppThemeMode.Light => false,
@@ -239,6 +240,17 @@ namespace WinClock
                 Debug.WriteLine($"讀取 Windows 主題失敗：{ex.Message}");
                 return false;
             }
+        }
+
+        /// <summary>「跟隨 Windows」時，系統切換明亮／暗色後跟著切換。</summary>
+        private void SystemEvents_UserPreferenceChanged(object sender, Microsoft.Win32.UserPreferenceChangedEventArgs e)
+        {
+            Dispatcher.BeginInvoke(() => {
+                if (Settings.Appearance.Theme == AppThemeMode.FollowWindows
+                    && IsDarkThemeFor(AppThemeMode.FollowWindows) != IsDarkTheme) {
+                    ApplyTheme();
+                }
+            });
         }
 
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -265,28 +277,36 @@ namespace WinClock
             SetTopmostFromPin(!Topmost);
         }
 
+        /// <summary>
+        /// 工具列主題按鈕：切到另一個明亮／暗色（「跟隨 Windows」也改成固定模式），立即套用並只保存這一欄。
+        /// </summary>
         private void btnThemeToggle_Click(object sender, RoutedEventArgs e)
         {
-            ApplyTheme(!IsDarkTheme);
+            var mode = IsDarkTheme ? AppThemeMode.Light : AppThemeMode.Dark;
+            Settings.Appearance.Theme = mode;
+            settingsWindow?.SetTheme(mode);
+            ApplyTheme();
+            SettingsStore.Update(s => s.Appearance.Theme = mode);
         }
 
-        private void ApplyTheme(bool isDark)
+        /// <summary>依 <see cref="Settings"/> 的主題模式與顏色更新主視窗。</summary>
+        private void ApplyTheme()
         {
+            var isDark = IsDarkThemeFor(Settings.Appearance.Theme);
+            var scheme = Settings.Appearance.SchemeFor(isDark);
             IsDarkTheme = isDark;
 
-            // 定義深淺色主題配色
-            Color winBgColor = isDark ? Color.FromRgb(30, 30, 36) : Color.FromRgb(240, 240, 245);
+            // 定義深淺色主題配色（背景與主要文字來自設定）
             Color winBorderColor = isDark ? Color.FromArgb(51, 255, 255, 255) : Color.FromArgb(34, 0, 0, 0);
-            Color textPrimaryColor = isDark ? Colors.White : Color.FromRgb(28, 25, 23);
             Color textSecondaryColor = isDark ? Color.FromRgb(160, 165, 181) : Color.FromRgb(87, 83, 78);
             Color iconColor = isDark ? Color.FromRgb(208, 211, 219) : Color.FromRgb(71, 85, 105);
             Color btnHoverColor = isDark ? Color.FromArgb(30, 255, 255, 255) : Color.FromArgb(20, 0, 0, 0);
             Color btnPressedColor = isDark ? Color.FromArgb(60, 255, 255, 255) : Color.FromArgb(40, 0, 0, 0);
 
             // 更新動態資源筆刷 (這將自動更新套用 DynamicResource 的 UI 元素)
-            this.Resources["WindowBackground"] = new SolidColorBrush(Color.FromArgb((byte)(isDark ? 217 : 225), winBgColor.R, winBgColor.G, winBgColor.B));
+            this.Resources["WindowBackground"] = ThemeBrushes.CreateBackground(scheme);
             this.Resources["WindowBorder"] = new SolidColorBrush(winBorderColor);
-            this.Resources["TextPrimary"] = new SolidColorBrush(textPrimaryColor);
+            this.Resources["TextPrimary"] = ThemeBrushes.CreateText(scheme);
             this.Resources["TextSecondary"] = new SolidColorBrush(textSecondaryColor);
             this.Resources["IconForeground"] = new SolidColorBrush(iconColor);
             this.Resources["ButtonHoverBackground"] = new SolidColorBrush(btnHoverColor);
@@ -349,26 +369,6 @@ namespace WinClock
             // 「+」按鈕：鬧鐘達上限時隱藏
             btnAddAlarm.Visibility = alarmItems.Count < MaxAlarms ? Visibility.Visible : Visibility.Collapsed;
         }
-
-        #region 視窗擴充狀態（DWToolkit：主題）
-
-        /// <summary>
-        /// 視窗關閉時由 DWToolkit 呼叫：保存主題。最上層改存 settings.json。
-        /// </summary>
-        public void CollectExtraState(WindowExtraState state)
-        {
-            state.Set("darkTheme", IsDarkTheme);
-        }
-
-        /// <summary>
-        /// 視窗顯示前由 DWToolkit 呼叫（只在有上次紀錄時）：還原主題。
-        /// </summary>
-        public void ApplyExtraState(WindowExtraState state)
-        {
-            ApplyTheme(state.GetBool("darkTheme", IsDarkTheme));
-        }
-
-        #endregion
 
         #region 鬧鐘
 
@@ -588,13 +588,13 @@ namespace WinClock
 
         /// <summary>
         /// 套用設定（設定視窗的即時預覽、確定、還原都經過這裡）。
-        /// 套用最上層與時間格式；主題由 Phase-11e 接上。開機啟動只在「確定」時寫入登錄（見 SettingsWindow）。
+        /// 套用最上層、主題與顏色、時間格式。開機啟動只在「確定」時寫入登錄（見 SettingsWindow）。
         /// </summary>
         private void ApplySettings(AppSettings settings)
         {
             Settings = settings;
             ApplyTopmost(settings.General.Topmost);
-            UpdateTimeDisplay();
+            ApplyTheme();
         }
 
         private void ApplyTopmost(bool topmost)
@@ -612,10 +612,7 @@ namespace WinClock
             Settings.General.Topmost = topmost;
             settingsWindow?.SetTopmost(topmost);
             ApplyTopmost(topmost);
-
-            var saved = SettingsStore.Load();
-            saved.General.Topmost = topmost;
-            SettingsStore.Save(saved);
+            SettingsStore.Update(s => s.General.Topmost = topmost);
         }
 
         #endregion
