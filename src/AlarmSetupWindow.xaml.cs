@@ -1,10 +1,7 @@
-using System.IO;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
-
-using NAudio.Wave;
 
 namespace WinClock
 {
@@ -17,8 +14,10 @@ namespace WinClock
     /// </summary>
     public partial class AlarmSetupWindow : Window
     {
-        private WaveOutEvent? waveOutEvent;
-        private Mp3FileReader? mp3FileReader;
+        private readonly AlarmPlayer player = new();
+
+        /// <summary>試聽音量 0–100（設定「鬧鐘」類別）。</summary>
+        public int Volume { get; set; } = 100;
 
         public bool IsPlaying
         {
@@ -60,6 +59,8 @@ namespace WinClock
         public AlarmSetupWindow()
         {
             InitializeComponent();
+            player.Stopped += (s, e) => IsPlaying = false;
+            Closed += (s, e) => player.Dispose();
             MyInit();
             ApplyTheme(IsDarkTheme);
         }
@@ -133,16 +134,8 @@ namespace WinClock
         {
             if (cmbSound.SelectedItem is not string soundName) return;
 
-            IsPlaying = true;
-            var fld = AppContext.BaseDirectory;
-            var mp3 = Path.Combine(fld, SG.AlarmSounds[MyAlarmCfg!.SoundName!]);
-            mp3FileReader = new Mp3FileReader(mp3);
-            waveOutEvent = new WaveOutEvent();
-
-            waveOutEvent.PlaybackStopped += WaveOutEvent_PlaybackStopped;
-
-            waveOutEvent.Init(mp3FileReader);
-            waveOutEvent.Play();
+            player.Play(soundName, Volume);
+            IsPlaying = player.IsPlaying;
         }
 
         private void btnStop_Click(object sender, RoutedEventArgs e)
@@ -150,23 +143,7 @@ namespace WinClock
             StopPlayback();
         }
 
-        private void WaveOutEvent_PlaybackStopped(object? sender, StoppedEventArgs e)
-        {
-            StopPlayback();
-        }
-
-        private void StopPlayback()
-        {
-            if (waveOutEvent != null) {
-                IsPlaying = false;
-                waveOutEvent.PlaybackStopped -= WaveOutEvent_PlaybackStopped;
-                waveOutEvent.Stop();
-                waveOutEvent.Dispose();
-                waveOutEvent = null;
-                mp3FileReader?.Dispose();
-                mp3FileReader = null;
-            }
-        }
+        private void StopPlayback() => player.Stop();
 
         private void btnRemove_Click(object sender, RoutedEventArgs e)
         {

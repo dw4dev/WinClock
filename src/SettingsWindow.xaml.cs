@@ -21,6 +21,7 @@ namespace WinClock
         private readonly AppSettings original;
         private readonly GeneralSettingsPage generalPage = new();
         private readonly AppearanceSettingsPage appearancePage = new();
+        private readonly AlarmSettingsPage alarmPage = new();
         private readonly Action<AppSettings> previewApply;
         private bool committed;
 
@@ -35,6 +36,7 @@ namespace WinClock
             this.previewApply = previewApply;
             generalPage.Changed += (s, e) => OnSettingsChanged();
             appearancePage.Changed += (s, e) => OnSettingsChanged();
+            alarmPage.Changed += (s, e) => OnSettingsChanged();
             SelectCategory(SettingsCategory.General);
         }
 
@@ -59,7 +61,7 @@ namespace WinClock
             ShowCategory(CurrentCategory);
         }
 
-        /// <summary>顯示類別內容（鬧鐘由 Phase-11g 填入）。</summary>
+        /// <summary>顯示類別內容。</summary>
         private void ShowCategory(SettingsCategory category)
         {
             switch (category) {
@@ -71,9 +73,9 @@ namespace WinClock
                     appearancePage.Load(Working.Appearance);
                     CategoryContent.Content = appearancePage;
                     break;
-                default:
-                    PlaceholderText.Text = "鬧鐘設定（尚未提供）";
-                    CategoryContent.Content = PlaceholderText;
+                case SettingsCategory.Alarm:
+                    alarmPage.Load(Working.Alarm);
+                    CategoryContent.Content = alarmPage;
                     break;
             }
         }

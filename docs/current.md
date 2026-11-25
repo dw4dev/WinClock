@@ -18,7 +18,7 @@
 | 11d | 一般設定（開機啟動、最上層、時間格式） | 11b、11c | ✅ |
 | 11e | 外觀：主題與顏色 | 11c | ✅ |
 | 11f | 外觀：字型 | 11c | ✅ |
-| 11g | 鬧鐘設定 | 11c | ⬜ |
+| 11g | 鬧鐘設定 | 11c | ✅ |
 
 Phase 文件：`phases/v1.1/phase-11x.md`。v1.0 設計：`kb/alarms.md`。
 
@@ -28,7 +28,7 @@ Phase 文件：`phases/v1.1/phase-11x.md`。v1.0 設計：`kb/alarms.md`。
 
 ## NEXT
 
-1. Phase-11g（依賴皆完成）。一個 phase 一個分支、一個 session。
+1. v1.1 所有 phase 完成。依 AI_Rules「Release Tag」詢問使用者是否建立 release tag；依「Maintenance」建立 `specs/v1.1-maintenance.md`。
 
 ## REF
 

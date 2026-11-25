@@ -16,11 +16,17 @@
 
 | 動作 | 結果 |
 |:--|:--|
-| 按「+」 | 預設時間是現在加 5 分鐘。按「確定」新增；按「取消」不新增 |
+| 按「+」 | 預設時間是現在加 5 分鐘。有設定預設鈴聲時，預先選好該鈴聲並勾選播放。按「確定」新增；按「取消」不新增 |
 | 按鬧鐘按鈕 | 編輯副本。「取消」不影響原本的鬧鐘；「確定」更新；「清除鬧鐘」移除 |
 | 滑鼠移到鬧鐘按鈕 | 提示：日期時間、剩餘時間、訊息、鈴聲 |
-| 時間到 | 移除該鬧鐘，顯示訊息視窗（有設定鈴聲時播放） |
-| 訊息視窗按「5 分鐘後提醒」 | 用同一份設定新增一個鬧鐘，時間是現在加 5 分鐘（精確到秒）。鬧鐘已滿 5 個時不新增 |
+| 時間到 | 移除該鬧鐘，顯示訊息視窗（有設定鈴聲時，用設定的音量播放） |
+| 訊息視窗按「N 分鐘後提醒」 | 用同一份設定新增一個鬧鐘，時間是現在加 N 分鐘（精確到秒）。鬧鐘已滿 5 個時不新增 |
+
+鬧鐘設定（v1.1 Phase-11g，`settings.json` 的 `Alarm`，設定視窗「鬧鐘」類別）：
+
+- `DefaultSound`：新增鬧鐘時預選的鈴聲；null 為不預選。
+- `Volume`：0–100，套用在訊息視窗響鈴與設定視窗試聽（`AlarmPlayer`，用 `SampleChannel` 調整，不改系統音量）。
+- `SnoozeMinutes`：1–60，預設 5（取代 v1.0 固定 5 分鐘）。響鈴當下讀取設定值。
 | 關閉程式再開啟 | 還原尚未到時間的鬧鐘。關閉期間已過時間的鬧鐘直接移除，不補響 |
 
 計時方式：每個鬧鐘一個 `DispatcherTimer`，最長每 30 秒重新比對一次時間（`AlarmCheckInterval`）。
@@ -65,6 +71,8 @@
   `AlarmSetup_PlaySoundCheckBox`、`AlarmSetup_SoundComboBox`、`AlarmSetup_PlayButton`、`AlarmSetup_StopButton`、
   `AlarmSetup_ShowMsgCheckBox`、`AlarmSetup_MessageTextBox`、`AlarmSetup_RemoveButton`、`AlarmSetup_CancelButton`、
   `AlarmSetup_OkButton`、`AlarmSetup_HeaderCloseButton`。
+- 設定視窗「鬧鐘」類別：`Settings_AlarmPage`、`Settings_DefaultSoundComboBox`、`Settings_SoundPreviewButton`、
+  `Settings_VolumeSlider`、`Settings_VolumeText`、`Settings_SnoozeMinutesComboBox`。
 - 訊息視窗：`Msg_Window`、`Msg_HeaderText`、`Msg_MessageText`、`Msg_SnoozeButton`、`Msg_CloseButton`、`Msg_HeaderCloseButton`。
 - 尚未加：主視窗的釘選、主題、最小化、關閉按鈕，以及時間、日期文字（這一輪沒有修改）。
 
@@ -85,7 +93,6 @@
 
 - 重複鬧鐘（每天、平日、每週指定日）。
 - 倒數計時器（例：25 分鐘番茄鐘），與鬧鐘共用提醒視窗。
-- 貪睡分鐘數可設定。
 - 鬧鐘清單視窗（上限開放後，工具列放不下時使用）。
 - 多時區時鐘列。
 - 開機自動啟動選項。
