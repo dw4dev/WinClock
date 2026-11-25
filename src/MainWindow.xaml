@@ -18,7 +18,6 @@
     ResizeMode="CanResize"
     SizeChanged="Window_SizeChanged"
     SizeToContent="Height"
-    Topmost="True"
     WindowStyle="None"
     mc:Ignorable="d">
 
@@ -208,6 +207,8 @@
                     <!--  左側控制按鈕  -->
                     <Button
                         x:Name="btnPinTop"
+                        AutomationProperties.AutomationId="Main_PinButton"
+                        AutomationProperties.Name="永遠在最上層"
                         Click="btnPinTop_Click"
                         DockPanel.Dock="Left"
                         Style="{StaticResource TitleBarButtonStyle}"
@@ -394,6 +395,7 @@
                 <!--  時間主文字  -->
                 <TextBlock
                     x:Name="TimeText"
+                    AutomationProperties.AutomationId="Main_TimeText"
                     Margin="0,-10,0,0"
                     HorizontalAlignment="Center"
                     d:Text="02:10:06"

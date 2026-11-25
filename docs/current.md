@@ -15,7 +15,7 @@
 | 11a | `settings.json` 模型與讀寫 | — | ✅ |
 | 11b | 系統匣圖示與選單 | — | ✅ |
 | 11c | 設定視窗骨架、即時預覽、齒輪按鈕 | 11a、11b | ✅ |
-| 11d | 一般設定（開機啟動、最上層、時間格式） | 11b、11c | ⬜ |
+| 11d | 一般設定（開機啟動、最上層、時間格式） | 11b、11c | ✅ |
 | 11e | 外觀：主題與顏色 | 11c | ⬜ |
 | 11f | 外觀：字型 | 11c | ⬜ |
 | 11g | 鬧鐘設定 | 11c | ⬜ |
@@ -28,12 +28,13 @@ Phase 文件：`phases/v1.1/phase-11x.md`。v1.0 設計：`kb/alarms.md`。
 
 ## NEXT
 
-1. Phase-11d／11e／11f／11g（依賴皆完成，可任選）。一個 phase 一個分支、一個 session。
+1. Phase-11e／11f／11g（依賴皆完成，可任選）。一個 phase 一個分支、一個 session。
 
 ## REF
 
 - `adr/0001-settings-file.md`（settings.json 格式與位置）
 - `adr/0002-tray-icon.md`（系統匣：NotifyIcon＋WPF 選單）
+- `adr/0003-autostart.md`（開機啟動：HKCU Run＋`--autostart`）
 - `kb/00-ui-rules.md`（UI Automation、視窗持久化）
 - `kb/alarms.md`（鬧鐘設計、AutomationId、驗收清單、後續候選）
 - `..\DWToolkit\docs\kb\referencing.md`（DWToolkit 引用說明）

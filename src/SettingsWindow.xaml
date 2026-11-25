@@ -8,6 +8,7 @@
     Height="420"
     MinWidth="460"
     MinHeight="320"
+    FontSize="14"
     dw:WindowPersistence.Key="Settings"
     AutomationProperties.AutomationId="Settings_Window"
     ResizeMode="CanResize"
