@@ -94,6 +94,12 @@ namespace WinClock
         public FontSetting ChineseFont { get; set; } = new() { Family = "Microsoft JhengHei UI", Weight = "Bold" };
         public FontSetting DigitFont { get; set; } = new() { Family = "Segoe UI", Weight = "Bold" };
 
+        public const int MinFontScale = 50;
+        public const int MaxFontScale = 200;
+
+        /// <summary>字型縮放比例（%），乘在主視窗隨寬度縮放的字級上。</summary>
+        public int FontScale { get; set; } = 100;
+
         public ColorScheme Light { get; set; } = new() {
             Background = "#F0F0F5",
             Background2 = "#F0F0F5",
@@ -111,9 +117,12 @@ namespace WinClock
         internal void Normalize()
         {
             if (!Enum.IsDefined(Theme)) Theme = AppThemeMode.Dark;
-            ChineseFont ??= new AppearanceSettings().ChineseFont;
-            DigitFont ??= new AppearanceSettings().DigitFont;
             var defaults = new AppearanceSettings();
+            ChineseFont ??= defaults.ChineseFont;
+            DigitFont ??= defaults.DigitFont;
+            ChineseFont.Normalize(defaults.ChineseFont);
+            DigitFont.Normalize(defaults.DigitFont);
+            FontScale = Math.Clamp(FontScale, MinFontScale, MaxFontScale);
             Light ??= defaults.Light;
             Dark ??= defaults.Dark;
             Light.Normalize(defaults.Light);
@@ -129,6 +138,13 @@ namespace WinClock
     {
         public string Family { get; set; } = "";
         public string Weight { get; set; } = "Bold";
+
+        /// <summary>空白字型名稱或不認得的粗細換成 <paramref name="defaults"/> 的值。沒安裝的字型保留，套用時才退回（見 <see cref="FontCatalog"/>）。</summary>
+        internal void Normalize(FontSetting defaults)
+        {
+            if (string.IsNullOrWhiteSpace(Family)) Family = defaults.Family;
+            if (!FontCatalog.IsValidWeight(Weight)) Weight = defaults.Weight;
+        }
     }
 
     /// <summary>一個主題的顏色。顏色用 #RRGGBB。</summary>
