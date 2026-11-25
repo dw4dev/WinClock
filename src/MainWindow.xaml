@@ -27,6 +27,7 @@
         <SolidColorBrush x:Key="WindowBorder" Color="#33FFFFFF" />
         <SolidColorBrush x:Key="TextPrimary" Color="#FFFFFF" />
         <SolidColorBrush x:Key="TextSecondary" Color="#A0A5B5" />
+        <SolidColorBrush x:Key="LunarText" Color="#FFFFFF" />
         <SolidColorBrush x:Key="IconForeground" Color="#D0D3DB" />
         <SolidColorBrush x:Key="ButtonHoverBackground" Color="#15FFFFFF" />
         <SolidColorBrush x:Key="ButtonPressedBackground" Color="#30FFFFFF" />
@@ -377,7 +378,7 @@
                         FontFamily="{DynamicResource ClockFontFamily}"
                         FontSize="16"
                         FontWeight="Normal"
-                        Foreground="{DynamicResource TextSecondary}" />
+                        Foreground="{DynamicResource LunarText}" />
 
                     <Border
                         x:Name="LunarTerm"

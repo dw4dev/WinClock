@@ -306,6 +306,7 @@ namespace WinClock
             this.Resources["WindowBorder"] = new SolidColorBrush(winBorderColor);
             this.Resources["TextPrimary"] = ThemeBrushes.CreateText(scheme);
             this.Resources["TextSecondary"] = new SolidColorBrush(textSecondaryColor);
+            this.Resources["LunarText"] = ThemeBrushes.CreateLunarText(scheme);
             this.Resources["IconForeground"] = new SolidColorBrush(iconColor);
             this.Resources["ButtonHoverBackground"] = new SolidColorBrush(btnHoverColor);
             this.Resources["ButtonPressedBackground"] = new SolidColorBrush(btnPressedColor);

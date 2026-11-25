@@ -29,6 +29,8 @@ namespace WinClock
             AutomationProperties.SetName(AngleSlider, "漸層角度");
             AutomationProperties.SetAutomationId(AngleText, prefix + "AngleText");
             TextField.SetAutomation(prefix + "Text", "文字顏色");
+            AutomationProperties.SetAutomationId(LunarFollowCheckBox, prefix + "LunarFollowCheckBox");
+            LunarField.SetAutomation(prefix + "Lunar", "農曆顏色");
             AutomationProperties.SetAutomationId(OpacitySlider, prefix + "OpacitySlider");
             AutomationProperties.SetName(OpacitySlider, "不透明度");
             AutomationProperties.SetAutomationId(OpacityText, prefix + "OpacityText");
@@ -44,6 +46,8 @@ namespace WinClock
             Background2Field.Load(colors.Background2);
             AngleSlider.Value = colors.GradientAngle;
             TextField.Load(colors.Text);
+            LunarFollowCheckBox.IsChecked = colors.LunarFollowText;
+            LunarField.Load(colors.LunarText);
             OpacitySlider.Value = colors.Opacity * 100;
             UpdateValueTexts();
             loading = false;
@@ -64,6 +68,8 @@ namespace WinClock
             scheme.Background2 = Background2Field.Value;
             scheme.GradientAngle = AngleSlider.Value;
             scheme.Text = TextField.Value;
+            scheme.LunarFollowText = LunarFollowCheckBox.IsChecked == true;
+            scheme.LunarText = LunarField.Value;
             // 使用者沒動過滑桿時保留原值（例：v1.0 的 0.882），避免四捨五入改變外觀。
             if (Math.Abs(OpacitySlider.Value - scheme.Opacity * 100) > 1e-9) scheme.Opacity = OpacitySlider.Value / 100;
             Changed?.Invoke(this, EventArgs.Empty);

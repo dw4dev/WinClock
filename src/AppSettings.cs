@@ -104,6 +104,7 @@ namespace WinClock
             Background = "#F0F0F5",
             Background2 = "#F0F0F5",
             Text = "#1C1917",
+            LunarText = "#57534E",   // v1.0 農曆灰色
             Opacity = 0.882   // v1.0：alpha 225
         };
 
@@ -111,6 +112,7 @@ namespace WinClock
             Background = "#1E1E24",
             Background2 = "#1E1E24",
             Text = "#FFFFFF",
+            LunarText = "#A0A5B5",   // v1.0 農曆灰色
             Opacity = 0.85    // v1.0：alpha 217
         };
 
@@ -162,6 +164,11 @@ namespace WinClock
 
         public string Text { get; set; } = "#FFFFFF";
 
+        /// <summary>true 時農曆文字用 <see cref="Text"/>；false 時用 <see cref="LunarText"/>（M-001）。</summary>
+        public bool LunarFollowText { get; set; } = true;
+
+        public string LunarText { get; set; } = "#A0A5B5";
+
         /// <summary>背景不透明度 0–1。</summary>
         public double Opacity { get; set; } = 1;
 
@@ -171,6 +178,7 @@ namespace WinClock
             Background = ValidColorOr(Background, defaults.Background);
             Background2 = ValidColorOr(Background2, defaults.Background2);
             Text = ValidColorOr(Text, defaults.Text);
+            LunarText = ValidColorOr(LunarText, defaults.LunarText);
             GradientAngle = double.IsFinite(GradientAngle) ? Math.Clamp(GradientAngle, 0, 360) : 0;
             Opacity = double.IsFinite(Opacity) ? Math.Clamp(Opacity, 0, 1) : 1;
         }
