@@ -1,0 +1,154 @@
+using System.Text.Json;
+using System.Text.Json.Serialization;
+
+namespace WinClock
+{
+    /// <summary>主題模式。</summary>
+    [JsonConverter(typeof(JsonStringEnumConverter<AppThemeMode>))]
+    public enum AppThemeMode
+    {
+        Light,
+        Dark,
+        FollowWindows
+    }
+
+    /// <summary>開機啟動時的視窗狀態。</summary>
+    [JsonConverter(typeof(JsonStringEnumConverter<StartupState>))]
+    public enum StartupState
+    {
+        Show,
+        Tray
+    }
+
+    /// <summary>
+    /// 全部設定（settings.json 的內容）。每個欄位的預設值等於 v1.0 的行為。
+    /// 讀寫見 <see cref="SettingsStore"/>。
+    /// </summary>
+    public sealed class AppSettings
+    {
+        public int Version { get; set; } = SettingsStore.FileVersion;
+        public GeneralSettings General { get; set; } = new();
+        public AppearanceSettings Appearance { get; set; } = new();
+        public AlarmSettings Alarm { get; set; } = new();
+
+        /// <summary>
+        /// 建立一份獨立的深層副本。設定視窗編輯副本，按「取消」時用原本的設定還原。
+        /// </summary>
+        public AppSettings Clone() =>
+            JsonSerializer.Deserialize<AppSettings>(JsonSerializer.Serialize(this, SettingsStore.JsonOptions), SettingsStore.JsonOptions)!;
+
+        /// <summary>
+        /// 把 null 的類別換成預設值，把超出範圍的數值拉回範圍內。
+        /// </summary>
+        public void Normalize()
+        {
+            General ??= new();
+            Appearance ??= new();
+            Alarm ??= new();
+            if (!Enum.IsDefined(General.StartupState)) General.StartupState = StartupState.Show;
+            Appearance.Normalize();
+            Alarm.Normalize();
+        }
+    }
+
+    public sealed class GeneralSettings
+    {
+        /// <summary>開機自動啟動。v1.0 不登記開機啟動。</summary>
+        public bool AutoStart { get; set; }
+
+        /// <summary>開機啟動時的狀態（只套用在開機啟動）。</summary>
+        public StartupState StartupState { get; set; } = StartupState.Show;
+
+        /// <summary>永遠在最上層。</summary>
+        public bool Topmost { get; set; }
+
+        /// <summary>true 為 24 小時制；false 為 12 小時制。</summary>
+        public bool Use24Hour { get; set; } = true;
+
+        /// <summary>顯示秒數。</summary>
+        public bool ShowSeconds { get; set; } = true;
+    }
+
+    public sealed class AppearanceSettings
+    {
+        public AppThemeMode Theme { get; set; } = AppThemeMode.Dark;
+
+        public FontSetting ChineseFont { get; set; } = new() { Family = "Microsoft JhengHei UI", Weight = "Bold" };
+        public FontSetting DigitFont { get; set; } = new() { Family = "Segoe UI", Weight = "Bold" };
+
+        public ColorScheme Light { get; set; } = new() {
+            Background = "#F0F0F5",
+            Background2 = "#F0F0F5",
+            Text = "#1C1917",
+            Opacity = 0.882   // v1.0：alpha 225
+        };
+
+        public ColorScheme Dark { get; set; } = new() {
+            Background = "#1E1E24",
+            Background2 = "#1E1E24",
+            Text = "#FFFFFF",
+            Opacity = 0.85    // v1.0：alpha 217
+        };
+
+        internal void Normalize()
+        {
+            if (!Enum.IsDefined(Theme)) Theme = AppThemeMode.Dark;
+            ChineseFont ??= new AppearanceSettings().ChineseFont;
+            DigitFont ??= new AppearanceSettings().DigitFont;
+            Light ??= new AppearanceSettings().Light;
+            Dark ??= new AppearanceSettings().Dark;
+            Light.Normalize();
+            Dark.Normalize();
+        }
+    }
+
+    /// <summary>字型與粗細。粗細用 WPF FontWeight 名稱（Normal、Bold……）。</summary>
+    public sealed class FontSetting
+    {
+        public string Family { get; set; } = "";
+        public string Weight { get; set; } = "Bold";
+    }
+
+    /// <summary>一個主題的顏色。顏色用 #RRGGBB。</summary>
+    public sealed class ColorScheme
+    {
+        public string Background { get; set; } = "#000000";
+
+        /// <summary>true 時背景用 <see cref="Background"/> 到 <see cref="Background2"/> 的漸層。</summary>
+        public bool UseGradient { get; set; }
+
+        public string Background2 { get; set; } = "#000000";
+
+        /// <summary>漸層角度 0–360。</summary>
+        public double GradientAngle { get; set; }
+
+        public string Text { get; set; } = "#FFFFFF";
+
+        /// <summary>背景不透明度 0–1。</summary>
+        public double Opacity { get; set; } = 1;
+
+        internal void Normalize()
+        {
+            GradientAngle = double.IsFinite(GradientAngle) ? Math.Clamp(GradientAngle, 0, 360) : 0;
+            Opacity = double.IsFinite(Opacity) ? Math.Clamp(Opacity, 0, 1) : 1;
+        }
+    }
+
+    public sealed class AlarmSettings
+    {
+        /// <summary>新增鬧鐘時預先選的鈴聲（<see cref="SG.AlarmSounds"/> 的名稱）；null 為不預選。</summary>
+        public string? DefaultSound { get; set; }
+
+        /// <summary>音量 0–100。</summary>
+        public int Volume { get; set; } = 100;
+
+        public int SnoozeMinutes { get; set; } = 5;
+
+        internal void Normalize()
+        {
+            if (DefaultSound is not null && !SG.AlarmSounds.ContainsKey(DefaultSound)) DefaultSound = null;
+            Volume = Math.Clamp(Volume, 0, 100);
+            if (SnoozeMinutes < 1) SnoozeMinutes = 5;
+        }
+    }
+}
