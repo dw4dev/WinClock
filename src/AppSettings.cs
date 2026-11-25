@@ -77,8 +77,8 @@ namespace WinClock
         /// <summary>開機啟動時的狀態（只套用在開機啟動）。</summary>
         public StartupState StartupState { get; set; } = StartupState.Show;
 
-        /// <summary>永遠在最上層。</summary>
-        public bool Topmost { get; set; }
+        /// <summary>永遠在最上層。預設啟用（同 v1.0）。</summary>
+        public bool Topmost { get; set; } = true;
 
         /// <summary>true 為 24 小時制；false 為 12 小時制。</summary>
         public bool Use24Hour { get; set; } = true;
