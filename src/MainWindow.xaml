@@ -31,6 +31,10 @@
         <SolidColorBrush x:Key="IconForeground" Color="#D0D3DB" />
         <SolidColorBrush x:Key="ButtonHoverBackground" Color="#15FFFFFF" />
         <SolidColorBrush x:Key="ButtonPressedBackground" Color="#30FFFFFF" />
+        <SolidColorBrush x:Key="AnchorLampOff" Color="#40FFFFFF" />
+        <SolidColorBrush x:Key="AnchorLampEnter" Color="#34D399" />
+        <SolidColorBrush x:Key="AnchorLampLocked" Color="#F87171" />
+        <SolidColorBrush x:Key="AnchorLampExit" Color="#FBBF24" />
 
         <!--  Thumb 自定義樣式  -->
         <Style x:Key="ResizeGripStyle" TargetType="Thumb">
@@ -205,8 +209,11 @@
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
-            <!--  工具列區域  -->
-            <Border Grid.Row="0" Margin="6,6,6,0">
+            <!--  工具列區域（錨定模式隱藏）  -->
+            <Border
+                x:Name="ToolbarArea"
+                Grid.Row="0"
+                Margin="6,6,6,0">
                 <DockPanel LastChildFill="False">
                     <!--  左側控制按鈕  -->
                     <Button
@@ -424,6 +431,40 @@
                 FontSize="10"
                 Foreground="{DynamicResource TextSecondary}"
                 Opacity="0.8" />
+
+            <!--  錨定提示（固定顯示；按住 Ctrl 時燈號亮起；右邊留空給縮放把手）  -->
+            <StackPanel
+                x:Name="AnchorHint"
+                Grid.Row="1"
+                Margin="0,0,18,4"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Bottom"
+                AutomationProperties.AutomationId="Main_AnchorHint"
+                Orientation="Horizontal">
+                <Ellipse
+                    x:Name="AnchorLamp"
+                    Width="12"
+                    Height="12"
+                    Margin="0,0,4,0"
+                    VerticalAlignment="Center"
+                    Fill="{DynamicResource AnchorLampOff}" />
+                <Path
+                    Width="10"
+                    Height="10"
+                    Margin="0,0,4,0"
+                    VerticalAlignment="Center"
+                    Data="M12,2A3,3 0 0,1 15,5C15,6.31 14.17,7.42 13,7.83V9H16V11H13V19.92C16.39,19.43 19,16.5 19,13H17L20.5,9.5L24,13H22C22,18.52 17.52,23 12,23C6.48,23 2,18.52 2,13H0L3.5,9.5L7,13H5C5,16.5 7.61,19.43 11,19.92V11H8V9H11V7.83C9.83,7.42 9,6.31 9,5A3,3 0 0,1 12,2M12,4A1,1 0 0,0 11,5A1,1 0 0,0 12,6A1,1 0 0,0 13,5A1,1 0 0,0 12,4Z"
+                    Fill="{Binding Foreground, ElementName=AnchorHintText}"
+                    Stretch="Uniform" />
+                <TextBlock
+                    x:Name="AnchorHintText"
+                    VerticalAlignment="Center"
+                    FontFamily="{DynamicResource ClockFontFamily}"
+                    FontSize="10"
+                    Foreground="{DynamicResource TextSecondary}"
+                    Opacity="0.8"
+                    Text="Ctrl+雙擊 退出錨定" />
+            </StackPanel>
 
             <!--  視窗拖曳調整大小的把手 (對齊内容列右下角)  -->
             <Thumb

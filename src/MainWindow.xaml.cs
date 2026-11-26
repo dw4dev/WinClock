@@ -84,6 +84,7 @@ namespace WinClock
                 Interval = TimeSpan.FromSeconds(1)
             };
             timer.Tick += Timer_Tick;
+            ctrlPollTimer.Tick += (s, e) => UpdateCtrlState();
 
             StateChanged += MainWindow_StateChanged;
             IsVisibleChanged += MainWindow_IsVisibleChanged;
@@ -115,9 +116,11 @@ namespace WinClock
             if (IsVisible) {
                 timer.Start();
                 UpdateTimeDisplay();
+                ctrlPollTimer.Start();
             }
             else {
                 timer.Stop();
+                ctrlPollTimer.Stop();
             }
         }
 
@@ -131,6 +134,8 @@ namespace WinClock
 
         private void ShowFromTray()
         {
+            // 系統匣「顯示」同時退出錨定模式，作為忘記 Ctrl+雙擊 時的備用出口。
+            if (isAnchored) SetAnchored(false);
             Show();
             if (WindowState == WindowState.Minimized) WindowState = WindowState.Normal;
             Activate();
@@ -149,10 +154,121 @@ namespace WinClock
 
         private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            if (e.ChangedButton == MouseButton.Left) {
-                this.DragMove();
+            if (e.ChangedButton != MouseButton.Left) return;
+
+            // Ctrl+雙擊：切換錨定模式（M-003）。
+            if (e.ClickCount == 2 && Keyboard.Modifiers.HasFlag(ModifierKeys.Control)) {
+                SetAnchored(!isAnchored);
+                e.Handled = true;
+                return;
+            }
+
+            if (!isAnchored && e.ClickCount == 1) this.DragMove();
+        }
+
+        #region 錨定模式（M-003）
+
+        /// <summary>
+        /// 錨定模式：隱藏工具列與縮放把手、不能拖動、滑鼠點擊穿透到下方視窗。
+        /// 按住 Ctrl 時暫時取消穿透，讓 Ctrl+雙擊 可以退出。只在執行期間有效，不寫入 settings.json。
+        /// </summary>
+        private bool isAnchored;
+        private bool isClickThrough;
+        private bool? lastCtrlDown;
+        private bool holdOffAfterExit;
+
+        /// <summary>視窗顯示期間偵測 Ctrl（一般模式也要顯示燈號提示）。</summary>
+        private readonly DispatcherTimer ctrlPollTimer = new() { Interval = TimeSpan.FromMilliseconds(100) };
+
+        private void SetAnchored(bool anchored)
+        {
+            // 底部位置不動：工具列隱藏／顯示後，依高度差調整 Top。
+            var bottom = Top + ActualHeight;
+
+            isAnchored = anchored;
+            ToolbarArea.Visibility = anchored ? Visibility.Collapsed : Visibility.Visible;
+            if (!anchored) SetClickThrough(false);
+
+            // 剛退出時 Ctrl 通常還按著：先顯示灰色，放開 Ctrl 後再依狀態亮綠燈。
+            holdOffAfterExit = !anchored && NativeMethods.IsCtrlDown();
+
+            lastCtrlDown = null;
+            UpdateCtrlState();
+
+            UpdateLayout();
+            Top = bottom - ActualHeight;
+        }
+
+        /// <summary>
+        /// 依 Ctrl 狀態更新燈號提示、縮放把手與點擊穿透。
+        /// 提示固定顯示（兼作功能提醒）；按住 Ctrl 時亮燈，錨定時另外取消穿透，放開後恢復穿透。
+        /// </summary>
+        private void UpdateCtrlState()
+        {
+            var ctrlDown = NativeMethods.IsCtrlDown();
+            if (ctrlDown == lastCtrlDown) return;
+            lastCtrlDown = ctrlDown;
+            if (!ctrlDown) holdOffAfterExit = false;
+
+            ResizeThumb.Visibility = isAnchored ? Visibility.Collapsed : Visibility.Visible;
+            AnchorHintText.Text = isAnchored ? "Ctrl+雙擊 退出錨定" : "Ctrl+雙擊 進入錨定";
+            UpdateAnchorLamp(ctrlDown);
+
+            if (isAnchored) SetClickThrough(!ctrlDown);
+        }
+
+        /// <summary>
+        /// 燈號：一般模式未按 Ctrl＝淡灰、按住 Ctrl＝綠（可進入）；
+        /// 錨定模式未按 Ctrl＝紅（鎖定中）、按住 Ctrl＝黃（可退出）。
+        /// </summary>
+        private void UpdateAnchorLamp(bool ctrlDown)
+        {
+            if (holdOffAfterExit) ctrlDown = false;
+            var key = (isAnchored, ctrlDown) switch {
+                (false, false) => "AnchorLampOff",
+                (false, true) => "AnchorLampEnter",
+                (true, false) => "AnchorLampLocked",
+                (true, true) => "AnchorLampExit"
+            };
+            AnchorLamp.Fill = (Brush)Resources[key];
+            AnchorHintText.Opacity = ctrlDown ? 1.0 : 0.8;
+        }
+
+        private void SetClickThrough(bool enable)
+        {
+            if (enable == isClickThrough) return;
+            var hwnd = new System.Windows.Interop.WindowInteropHelper(this).Handle;
+            if (hwnd == IntPtr.Zero) return;
+            NativeMethods.SetTransparent(hwnd, enable);
+            isClickThrough = enable;
+        }
+
+        private static class NativeMethods
+        {
+            private const int GWL_EXSTYLE = -20;
+            private const int WS_EX_TRANSPARENT = 0x20;
+            private const int VK_CONTROL = 0x11;
+
+            [System.Runtime.InteropServices.DllImport("user32.dll")]
+            private static extern int GetWindowLong(IntPtr hWnd, int nIndex);
+
+            [System.Runtime.InteropServices.DllImport("user32.dll")]
+            private static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
+
+            [System.Runtime.InteropServices.DllImport("user32.dll")]
+            private static extern short GetAsyncKeyState(int vKey);
+
+            public static bool IsCtrlDown() => (GetAsyncKeyState(VK_CONTROL) & 0x8000) != 0;
+
+            public static void SetTransparent(IntPtr hwnd, bool enable)
+            {
+                var style = GetWindowLong(hwnd, GWL_EXSTYLE);
+                style = enable ? style | WS_EX_TRANSPARENT : style & ~WS_EX_TRANSPARENT;
+                SetWindowLong(hwnd, GWL_EXSTYLE, style);
             }
         }
+
+        #endregion
 
         static readonly string[] weekdays = ["日", "一", "二", "三", "四", "五", "六"];
         private void UpdateTimeDisplay()
@@ -314,6 +430,13 @@ namespace WinClock
             // 設定釘選與鬧鐘啟用時的半透明效果色
             activePinBrush = new SolidColorBrush(isDark ? Color.FromArgb(64, 16, 185, 129) : Color.FromArgb(48, 16, 185, 129));
             this.Resources["ActiveAlarmBackground"] = new SolidColorBrush(isDark ? Color.FromArgb(64, 239, 68, 68) : Color.FromArgb(48, 239, 68, 68));
+
+            // 錨定燈號（M-003）：暗色用亮色，明亮用深色
+            this.Resources["AnchorLampEnter"] = new SolidColorBrush(isDark ? Color.FromRgb(52, 211, 153) : Color.FromRgb(5, 150, 105));
+            this.Resources["AnchorLampLocked"] = new SolidColorBrush(isDark ? Color.FromRgb(248, 113, 113) : Color.FromRgb(220, 38, 38));
+            this.Resources["AnchorLampExit"] = new SolidColorBrush(isDark ? Color.FromRgb(251, 191, 36) : Color.FromRgb(217, 119, 6));
+            this.Resources["AnchorLampOff"] = new SolidColorBrush(isDark ? Color.FromArgb(64, 255, 255, 255) : Color.FromArgb(64, 0, 0, 0));
+            UpdateAnchorLamp(lastCtrlDown == true);
 
             // 更新節氣標籤調色盤 (莫蘭迪清新半透明配色)
             if (isDark) {
