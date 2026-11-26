@@ -13,7 +13,12 @@
     AutomationProperties.AutomationId="Settings_Window"
     ResizeMode="CanResize"
     ShowInTaskbar="True"
+    Background="{DynamicResource S.WindowBg}"
     WindowStartupLocation="CenterScreen">
+
+    <Window.Resources>
+        <ResourceDictionary Source="SettingsStyles.xaml" />
+    </Window.Resources>
 
     <Grid Margin="12">
         <Grid.RowDefinitions>
@@ -30,20 +35,18 @@
             x:Name="CategoryList"
             Grid.Row="0"
             Grid.Column="0"
+            Style="{StaticResource S.NavList}"
             AutomationProperties.AutomationId="Settings_CategoryList"
             SelectionChanged="CategoryList_SelectionChanged">
             <ListBoxItem
-                Padding="8,6"
                 AutomationProperties.AutomationId="Settings_GeneralCategoryItem"
                 Content="一般"
                 Tag="General" />
             <ListBoxItem
-                Padding="8,6"
                 AutomationProperties.AutomationId="Settings_AppearanceCategoryItem"
                 Content="外觀"
                 Tag="Appearance" />
             <ListBoxItem
-                Padding="8,6"
                 AutomationProperties.AutomationId="Settings_AlarmCategoryItem"
                 Content="鬧鐘"
                 Tag="Alarm" />
@@ -54,9 +57,11 @@
             Grid.Row="0"
             Grid.Column="1"
             Margin="12,0,0,0"
-            Padding="12"
-            BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}"
-            BorderThickness="1">
+            Padding="16"
+            Background="{StaticResource S.CardBg}"
+            BorderBrush="{StaticResource S.Border}"
+            BorderThickness="1"
+            CornerRadius="8">
             <ContentControl x:Name="CategoryContent" AutomationProperties.AutomationId="Settings_CategoryContent">
                 <TextBlock
                     x:Name="PlaceholderText"

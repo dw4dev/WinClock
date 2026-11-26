@@ -5,22 +5,49 @@
     <StackPanel Orientation="Horizontal">
         <TextBox
             x:Name="HexTextBox"
-            Width="80"
+            Width="84"
             VerticalContentAlignment="Center"
             LostFocus="HexTextBox_LostFocus"
             MaxLength="7"
             TextChanged="HexTextBox_TextChanged" />
+        <!--  選色按鈕：底色 = 目前顏色（M-002）  -->
         <Button
             x:Name="PickButton"
-            Width="28"
+            Width="40"
             Margin="6,0,0,0"
-            Padding="3"
             Click="PickButton_Click"
+            Cursor="Hand"
             ToolTip="選擇顏色">
-            <Border
-                x:Name="Swatch"
-                BorderBrush="Gray"
-                BorderThickness="1" />
+            <Button.Template>
+                <ControlTemplate TargetType="Button">
+                    <Border
+                        x:Name="bd"
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="#33000000"
+                        BorderThickness="1"
+                        CornerRadius="6"
+                        SnapsToDevicePixels="True">
+                        <Border
+                            x:Name="ring"
+                            BorderBrush="#99FFFFFF"
+                            BorderThickness="1"
+                            CornerRadius="5" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="bd" Property="BorderBrush" Value="#2E7D6B" />
+                            <Setter TargetName="bd" Property="BorderThickness" Value="2" />
+                        </Trigger>
+                        <Trigger Property="IsKeyboardFocused" Value="True">
+                            <Setter TargetName="bd" Property="BorderBrush" Value="#2E7D6B" />
+                            <Setter TargetName="bd" Property="BorderThickness" Value="2" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="bd" Property="Opacity" Value="0.4" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Button.Template>
         </Button>
     </StackPanel>
 </UserControl>
