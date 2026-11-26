@@ -77,7 +77,7 @@ namespace WinClock
 
         private void UpdateSwatch()
         {
-            Swatch.Background = new SolidColorBrush(ThemeBrushes.ParseColor(Value) ?? Colors.Black);
+            PickButton.Background = new SolidColorBrush(ThemeBrushes.ParseColor(Value) ?? Colors.Black);
         }
     }
 }
