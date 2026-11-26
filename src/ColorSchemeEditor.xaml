@@ -137,9 +137,11 @@
             Margin="0,8,0,0"
             VerticalAlignment="Center"
             LargeChange="10"
+            IsSnapToTickEnabled="True"
             Maximum="100"
-            Minimum="0"
+            Minimum="1"
             SmallChange="1"
+            TickFrequency="1"
             ValueChanged="Slider_ValueChanged" />
         <TextBlock
             x:Name="OpacityText"

@@ -21,7 +21,8 @@ namespace WinClock
         /// <summary>背景筆刷：單色或 2 色漸層，套用不透明度。</summary>
         public static Brush CreateBackground(ColorScheme scheme)
         {
-            var alpha = (byte)Math.Round(scheme.Opacity * 255);
+            // alpha 0 的像素不接收滑鼠事件，會讓拖曳與錨定雙擊失效，所以最小為 1。
+            var alpha = (byte)Math.Clamp(Math.Round(scheme.Opacity * 255), 1, 255);
             var first = WithAlpha(ParseColor(scheme.Background) ?? Colors.Black, alpha);
             if (!scheme.UseGradient) return Frozen(new SolidColorBrush(first));
 

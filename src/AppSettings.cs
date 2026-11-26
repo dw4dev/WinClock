@@ -169,8 +169,10 @@ namespace WinClock
 
         public string LunarText { get; set; } = "#A0A5B5";
 
-        /// <summary>背景不透明度 0–1。</summary>
+        /// <summary>背景不透明度 0.01–1；不允許 0，避免背景完全穿透滑鼠。</summary>
         public double Opacity { get; set; } = 1;
+
+        internal const double MinOpacity = 0.01;
 
         /// <summary>數值拉回範圍內；格式不對的顏色換成 <paramref name="defaults"/> 的值。</summary>
         internal void Normalize(ColorScheme defaults)
@@ -180,7 +182,7 @@ namespace WinClock
             Text = ValidColorOr(Text, defaults.Text);
             LunarText = ValidColorOr(LunarText, defaults.LunarText);
             GradientAngle = double.IsFinite(GradientAngle) ? Math.Clamp(GradientAngle, 0, 360) : 0;
-            Opacity = double.IsFinite(Opacity) ? Math.Clamp(Opacity, 0, 1) : 1;
+            Opacity = double.IsFinite(Opacity) ? Math.Clamp(Opacity, MinOpacity, 1) : 1;
         }
 
         private static string ValidColorOr(string? value, string fallback) =>
