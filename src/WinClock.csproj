@@ -36,6 +36,7 @@
 
   <ItemGroup>
     <Content Include="Images\WinClock.ico" />
+    <None Include="..\docs\WinClock-使用說明.md" Link="WinClock-使用說明.md" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" ExcludeFromSingleFile="true" />
   </ItemGroup>
 
   <ItemGroup>
