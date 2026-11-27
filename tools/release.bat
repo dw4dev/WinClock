@@ -9,7 +9,7 @@ set EXITCODE=%ERRORLEVEL%
 
 rem Open the output folder and pause only when launched by double-click.
 echo %cmdcmdline% | find /i "%~f0" >nul && (
-    if %EXITCODE%==0 explorer "%~dp0..\build\publish"
+    rem if %EXITCODE%==0 explorer "%~dp0..\build\publish"
     pause
 )
 
